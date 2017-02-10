@@ -1,0 +1,53 @@
+{
+  "name": "corespring-match",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "corespring-correct-answer-toggle": "^3.0.0",
+    "immutability-helper": "^2.1.1",
+    "less": "^2.7.1",
+    "lodash": "^4.17.2",
+    "material-ui": "^0.16.5",
+    "react": "^15.4.1",
+    "react-addons-css-transition-group": "^15.4.1",
+    "react-dom": "^15.4.1"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-transform-class-properties": "^6.19.0",
+    "babel-preset-airbnb": "^2.1.1",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-register": "^6.18.0",
+    "chai": "^3.5.0",
+    "chai-shallow-deep-equal": "^1.4.4",
+    "css-loader": "^0.26.1",
+    "dsv-loader": "^2.0.0",
+    "enzyme": "^2.7.0",
+    "eslint": "^3.12.2",
+    "eslint-plugin-react": "^6.8.0",
+    "gulp": "^3.9.1",
+    "json-loader": "^0.5.4",
+    "less": "^2.7.1",
+    "less-loader": "^2.2.3",
+    "mocha": "^3.2.0",
+    "pie-control-panel": "PieLabs/pie-control-panel#develop",
+    "postcss-loader": "^1.2.1",
+    "proxyquire": "^1.7.10",
+    "react-addons-test-utils": "^15.4.1",
+    "release-helper": "github:pielabs/release-helper#v1.3.0",
+    "sinon": "^1.17.6",
+    "style-loader": "^0.13.1",
+    "webpack": "^2.1.0-beta.25",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
