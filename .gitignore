@@ -1,1 +1,12 @@
 node_modules/
+bower_components/
+dist/
+.idea/
+*.iml
+.bower*
+npm-debug.log
+jsconfig.json
+typings
+typings.json
+.eslintrc.json
+.vscode

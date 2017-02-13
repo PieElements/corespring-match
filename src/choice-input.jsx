@@ -32,7 +32,7 @@ export class ChoiceInput extends React.Component {
 
     const muiTheme = this.getTheme();
     const Tag = this.props.choiceMode === 'checkbox' ? Checkbox : RadioButton;
-    const classSuffix = this.props.choiceMode === 'checkbox' ? 'checkbox' : 'radio-button';
+    const classSuffix = this.props.choiceMode === 'checkbox' ? 'checkbox' : 'radio';
     /**
      * TODO: should only really have 1 theme provider in the component tree.
      * but the way Checkbox is set up you can't tweak the styles via the props fully.

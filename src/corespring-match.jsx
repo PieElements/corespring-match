@@ -21,13 +21,7 @@ export default class CorespringMatch extends React.Component {
   }
 
   _className() {
-    return 'corespring-match-table four-column';
-  }
-
-  _whereIdIsEqual(id) {
-    return function(match) {
-      return match.id === id;
-    };
+    return 'corespring-match-table';
   }
 
   _prepareModel() {
@@ -83,9 +77,16 @@ export default class CorespringMatch extends React.Component {
       return columns;
     };
 
+
+    let whereIdIsEqual = (id) => {
+      return function(match) {
+        return match.id === id;
+      };
+    };
+
     let prepareRows = () => {
       let createMatchSetFromSession = (id) => {
-        return _.find(self.props.session.answers, self.whereIdIsEqual(id))
+        return _.find(self.props.session.answers, whereIdIsEqual(id))
           .matchSet.map((match) => {
             return {
               value: match
@@ -104,7 +105,7 @@ export default class CorespringMatch extends React.Component {
       let answersExist = (self.props.session && self.props.session.answers);
       let rows = self.props.model.rows.map((row) => {
         let cloneRow = _.cloneDeep(row);
-        cloneRow.matchSet = answersExist ? createMatchSetFromSession(row.id) : createEmptyMatchSet(self.props.model.columns.length - 1);
+        cloneRow.matchSet = answersExist === true ? createMatchSetFromSession(row.id) : createEmptyMatchSet(self.props.model.columns.length - 1);
         return cloneRow;
       });
       return rows;
@@ -126,12 +127,17 @@ export default class CorespringMatch extends React.Component {
       });
     };
 
-    this.setState(update(this.state, { model: { rows: { [rowIndex] : { matchSet: { [columnIndex] : { value: { "$set": value } } } } } } }),
-      () => {
-        this.props.session.answers = stateToSession(this.state);
-        this.props.onChange(this.props.session);
-      }
-    );
+    let callback = () => {
+      this.props.session.answers = stateToSession(this.state);
+      this.props.onChange(this.props.session);
+    };
+
+    if (this.props.model.config.inputType === 'radio') {
+      let row = Array.apply(null, Array(this.props.model.columns.length - 1)).map((a, index) => {return {value: (index === columnIndex) };});
+      this.setState(update(this.state, { model: { rows: { [rowIndex] : { matchSet: { "$set": row } } } } }), callback);
+    } else {
+      this.setState(update(this.state, { model: { rows: { [rowIndex] : { matchSet: { [columnIndex] : { value: { "$set": value } } } } } } }), callback);      
+    }
   }
 
   onToggle() {
