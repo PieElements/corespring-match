@@ -1,15 +1,13 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { stub, assert } from 'sinon';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import _ from 'lodash';
 import ChoiceInput from '../src/choice-input';
-
-import jsdom from 'jsdom';
-const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
-global.document = doc;
-global.window = doc.defaultView;
+import Checkbox from 'material-ui/Checkbox';
+import RadioButton from 'material-ui/RadioButton';
+import sinon from 'sinon';
 
 describe('CorespringMatch', () => {
 
@@ -33,7 +31,7 @@ describe('CorespringMatch', () => {
       mode: 'gather'
     }, opts) : opts;
 
-    return mount(<CorespringMatch
+    return shallow(<CorespringMatch
       model={opts.model}
       outcomes={opts.outcomes}
       session={opts.session}
@@ -152,21 +150,20 @@ describe('CorespringMatch', () => {
 
       beforeEach(() => {
         config.session = session;
-        config.onChange = (session) => {
-          console.log("BORK");
-          console.log(session);
-        };
         wrapper = mkWrapper(config);
       });
 
       describe('when two choices in a row are clicked', () => {
-
+        var callback = sinon.spy();
+        config.onChange = callback;
+        // config.onChange = (session) => {
+        //   console.log(JSON.stringify(session, null, 2));
+        // };
         it('only the most recent choice is selected', () => {
-          let row = wrapper.find('.question-row').at(0);
-
-          row.find(ChoiceInput).at(0).simulate('click');
-          row.find(ChoiceInput).at(1).simulate('click');
-          console.log(session); // expect that this will be updated, but it isn't
+          let row = wrapper.find('.question-row').forEach((row) => {
+            row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
+            row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
+          });
         });
 
       });

@@ -4,6 +4,12 @@ function countWhenTrue(acc, bool) {
   return acc + (bool ? 1 : 0);
 }
 
+const colorMap = {
+  black_on_rose: 'black-on-rose',
+  white_on_black: 'white-on-black',
+  black_on_white: 'default'
+};
+
 export function outcome(question, session) {
 
   function countIncorrect(acc, correct_answer_pair) {
@@ -131,7 +137,12 @@ export function model(question, session, env) {
       response.numAnswers = numberOfAnswers(session.answers);
       response.correctResponse = question.correctResponse;
     }
+
+    if (env.accessibility && env.accessibility.colorContrast && colorMap[env.accessibility.colorContrast]) {
+      response.className = colorMap[env.accessibility.colorContrast];
+    }
     console.log('response', response);
+
     resolve(response);
   });
 

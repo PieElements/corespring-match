@@ -8,6 +8,7 @@ import cloneDeep from 'lodash/cloneDeep';
 export class ChoiceInput extends React.Component {
 
   onCheck(el) {
+    console.log('checka checka');
     this.props.onChange({
       value: this.props.value,
       selected: el.target.checked

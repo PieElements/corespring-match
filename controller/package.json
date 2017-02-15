@@ -1,14 +1,17 @@
 {
   "name": "corespring-match-controller",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
+  "main": "./src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --require babel-register test/**/*-test.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.16.4"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-shallow-deep-equal": "^1.4.4",
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.7"
   }
 }

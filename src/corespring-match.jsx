@@ -4,6 +4,7 @@ import CorespringCorrectAnswerToggle from 'corespring-correct-answer-toggle';
 import update from 'immutability-helper';
 import * as _ from 'lodash';
 import ChoiceInput from './choice-input.jsx';
+import SvgIcon from 'corespring-icon';
 
 export default class CorespringMatch extends React.Component {
   
@@ -162,6 +163,10 @@ export default class CorespringMatch extends React.Component {
       return undefined;
     };
 
+    let answerExpected = (rowIndex) => {
+      return !showCorrect && (this.props.model.correctnessMatrix && this.props.model.correctnessMatrix[rowIndex].answerExpected);
+    }
+
     let checked = (rowIndex, columnIndex) => {
       if (showCorrect) {
         return this.props.model.correctResponse[rowIndex].matchSet[columnIndex];
@@ -193,8 +198,13 @@ export default class CorespringMatch extends React.Component {
               return <tr className="question-row" key={rowIndex}>
                 <td className="question-cell match-td-padded">{row.labelHtml}</td>
                 <td className="answer-expected-warning match-td-padded">
-                  <div className="warning-holder">
-                  </div>
+                {
+                  (answerExpected(rowIndex)) ?
+                    <div className="warning-holder">
+                        <SvgIcon category="feedback" iconKey="nothing-submitted" shape="square" iconSet="emoji"/>
+                    </div> :
+                    <div></div>
+                }
                 </td>
                 {
                   row.matchSet.map((match, columnIndex) => {
@@ -204,7 +214,7 @@ export default class CorespringMatch extends React.Component {
                           checked={checked(rowIndex, columnIndex)}
                           disabled={disabled}
                           correctness={correctness(rowIndex, columnIndex)}
-                          onChange={(result) => { self.change(rowIndex, columnIndex, result.selected) }}
+                          onChange={(result) => { self.change(rowIndex, columnIndex, result.selected); }}
                         />
                     </td>;
                   })
