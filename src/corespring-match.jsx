@@ -1,10 +1,10 @@
-import React, { PropTypes } from 'react';
+  import React, { PropTypes } from 'react';
 import CorespringCorrectAnswerToggle from 'corespring-correct-answer-toggle';
 
 import update from 'immutability-helper';
 import * as _ from 'lodash';
 import ChoiceInput from './choice-input.jsx';
-import SvgIcon from 'corespring-icon';
+import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon.jsx';
 
 export default class CorespringMatch extends React.Component {
   
@@ -154,6 +154,10 @@ export default class CorespringMatch extends React.Component {
     let disabled = this.props.mode !== 'gather';
     let showCorrect = (this.props.mode === 'evaluate' && this.state.showCorrect);
 
+    if (self.props.model.correctnessMatrix) {
+      console.log('self.props.model.correctnessMatrix', JSON.stringify(self.props.model.correctnessMatrix, null, 2));
+    }
+
     let correctness = (rowIndex, columnIndex) => {
       if (showCorrect) {
         return this.props.model.correctResponse[rowIndex].matchSet[columnIndex] ? 'correct' : undefined;
@@ -201,7 +205,7 @@ export default class CorespringMatch extends React.Component {
                 {
                   (answerExpected(rowIndex)) ?
                     <div className="warning-holder">
-                        <SvgIcon category="feedback" iconKey="nothing-submitted" shape="square" iconSet="emoji"/>
+                      <NothingSubmittedIcon iconSet="check" category="feedback" shape="square" />
                     </div> :
                     <div></div>
                 }

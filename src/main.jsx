@@ -37,14 +37,10 @@ class Main extends React.Component {
 
   getClass(className) {
     className = className || '';
-    console.log(className);
     return `corespring-match-root ${className}`
   }
 
   render() {
-
-    console.log('prop for theme:', this.props.className);
-    console.log('props:', this.props);
     let theme = this._getMuiTheme(this.props.className);
 
     return <div className={this.getClass(this.props.className)}>

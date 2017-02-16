@@ -141,7 +141,6 @@ export function model(question, session, env) {
     if (env.accessibility && env.accessibility.colorContrast && colorMap[env.accessibility.colorContrast]) {
       response.className = colorMap[env.accessibility.colorContrast];
     }
-    console.log('response', response);
 
     resolve(response);
   });
