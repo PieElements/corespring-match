@@ -1,10 +1,10 @@
-  import React, { PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import CorespringCorrectAnswerToggle from 'corespring-correct-answer-toggle';
 
 import update from 'immutability-helper';
 import * as _ from 'lodash';
-import ChoiceInput from './choice-input.jsx';
-import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon.jsx';
+import ChoiceInput from './choice-input';
+import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon';
 
 export default class CorespringMatch extends React.Component {
   
@@ -155,7 +155,7 @@ export default class CorespringMatch extends React.Component {
     let showCorrect = (this.props.mode === 'evaluate' && this.state.showCorrect);
 
     if (self.props.model.correctnessMatrix) {
-      console.log('self.props.model.correctnessMatrix', JSON.stringify(self.props.model.correctnessMatrix, null, 2));
+      //console.log('self.props.model.correctnessMatrix', JSON.stringify(self.props.model.correctnessMatrix, null, 2));
     }
 
     let correctness = (rowIndex, columnIndex) => {
@@ -166,6 +166,14 @@ export default class CorespringMatch extends React.Component {
       }
       return undefined;
     };
+
+    let choiceCellClass = (rowIndex, columnIndex) => {
+      return _.without([
+        'answer-cell',
+        'match-td-padded',
+        correctness(rowIndex, columnIndex)
+      ], undefined).join(' ');
+    }
 
     let answerExpected = (rowIndex) => {
       return !showCorrect && (this.props.model.correctnessMatrix && this.props.model.correctnessMatrix[rowIndex].answerExpected);
@@ -179,13 +187,18 @@ export default class CorespringMatch extends React.Component {
       }
     };
 
-    let showToggle = this.props.mode === 'evaluate' && this.props.model.numAnswers !== 0;
+    let showToggle = this.props.mode === 'evaluate' && this.props.model.numAnswers !== 0 && this.props.model.correctness !== 'correct';
 
     return <div className="corespring-match">
-      <CorespringCorrectAnswerToggle
-        show={showToggle}
-        toggled={this.state.showCorrect}
-        onToggle={this.onToggle.bind(this)} />
+      {
+        (showToggle) ? <div className="correct-answer-toggle">
+          <CorespringCorrectAnswerToggle
+            show={showToggle}
+            toggled={this.state.showCorrect}
+            onToggle={this.onToggle.bind(this)} />
+          </div> :
+        <div/>
+      }
       <table className={self._className()}>
         <thead>
           <tr className="header-row">
@@ -207,12 +220,12 @@ export default class CorespringMatch extends React.Component {
                     <div className="warning-holder">
                       <NothingSubmittedIcon iconSet="check" category="feedback" shape="square" />
                     </div> :
-                    <div></div>
+                    <div/>
                 }
                 </td>
                 {
                   row.matchSet.map((match, columnIndex) => {
-                    return <td className="answer-cell match-td-padded" key={columnIndex}>
+                    return <td className={choiceCellClass(rowIndex, columnIndex)} key={columnIndex}>
                       <ChoiceInput
                           choiceMode={self.props.model.config.inputType}
                           checked={checked(rowIndex, columnIndex)}

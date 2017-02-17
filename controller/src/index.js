@@ -10,34 +10,35 @@ const colorMap = {
   black_on_white: 'default'
 };
 
+
+function countIncorrect(acc, correct_answer_pair) {
+  var correct = correct_answer_pair[0];
+  var answer = correct_answer_pair[1];
+  return countWhenTrue(acc, answer && !correct);
+}
+
+function countWhenTrueAndCorrect(acc, correct_answer_pair) {
+  var correct = correct_answer_pair[0];
+  var answer = correct_answer_pair[1];
+  return countWhenTrue(acc, answer && correct);
+}
+
+
+function countCorrectAnswers(answer, correctAnswer) {
+  return _.reduce(answer, function(acc1, answerRow) {
+    let correctMatchSet = _.find(correctAnswer, function(correctRow) {
+      return correctRow.id === answerRow.id;
+    }).matchSet;
+
+    let zippedMatchSet = _.zip(correctMatchSet, answerRow.matchSet);
+    let numIncorrect = _.reduce(zippedMatchSet, countIncorrect, 0);
+
+    return acc1 + ((0 === numIncorrect) ?
+        _.reduce(zippedMatchSet, countWhenTrueAndCorrect, 0) : 0);
+  }, 0);
+}
+
 export function outcome(question, session) {
-
-  function countIncorrect(acc, correct_answer_pair) {
-    var correct = correct_answer_pair[0];
-    var answer = correct_answer_pair[1];
-    return countWhenTrue(acc, answer && !correct);
-  }
-
-  function countWhenTrueAndCorrect(acc, correct_answer_pair) {
-    var correct = correct_answer_pair[0];
-    var answer = correct_answer_pair[1];
-    return countWhenTrue(acc, answer && correct);
-  }
-
-
-  function countCorrectAnswers(answer, correctAnswer) {
-    return _.reduce(answer, function(acc1, answerRow) {
-      let correctMatchSet = _.find(correctAnswer, function(correctRow) {
-        return correctRow.id === answerRow.id;
-      }).matchSet;
-
-      let zippedMatchSet = _.zip(correctMatchSet, answerRow.matchSet);
-      let numIncorrect = _.reduce(zippedMatchSet, countIncorrect, 0);
-
-      return acc1 + ((0 === numIncorrect) ?
-          _.reduce(zippedMatchSet, countWhenTrueAndCorrect, 0) : 0);
-    }, 0);
-  }
 
   return new Promise((resolve) => {
     let numAnsweredCorrectly = countCorrectAnswers(session.answers, question.correctResponse);
@@ -133,6 +134,12 @@ export function model(question, session, env) {
     response.rows = question.rows || [];
     response.config = question.config;
     if (env.mode === 'evaluate') {
+      if (session !== undefined) {
+        let numAnsweredCorrectly = countCorrectAnswers(session.answers, question.correctResponse);
+        let totalCorrectAnswers = countCorrectAnswers(question.correctResponse, question.correctResponse); 
+        response.correctness = (numAnsweredCorrectly === totalCorrectAnswers) ? 'correct' : 'incorrect';
+      }
+
       response.correctnessMatrix = buildCorrectnessMatrix(question, session.answers);
       response.numAnswers = numberOfAnswers(session.answers);
       response.correctResponse = question.correctResponse;
