@@ -37,13 +37,12 @@ class Main extends React.Component {
 
   getClass(className) {
     className = className || '';
-    return `corespring-match-root ${className}`
+    return `corespring-match-root ${className}`;
   }
 
   render() {
-    let theme = this._getMuiTheme(this.props.className);
-
-    return <div className={this.getClass(this.props.className)}>
+    let theme = this._getMuiTheme(this.props.model.className);
+    return <div className={this.getClass(this.props.model.className)}>
       <MuiThemeProvider muiTheme={theme}>
         <CorespringMatch
           model={this.props.model}
