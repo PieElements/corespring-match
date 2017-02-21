@@ -204,7 +204,7 @@ export default class CorespringMatch extends React.Component {
           <tr className="header-row">
           {
             columns.map((column, index) => {
-              return <th colSpan={index?1:2} key={index}>{column.labelHtml}</th>;
+              return <th colSpan={index?1:2} key={index} dangerouslySetInnerHTML={{__html: column.labelHtml}}></th>;
             })
           }
           </tr>
@@ -213,7 +213,7 @@ export default class CorespringMatch extends React.Component {
           { 
             rows.map((row, rowIndex) => {
               return <tr className="question-row" key={rowIndex}>
-                <td className="question-cell match-td-padded">{row.labelHtml}</td>
+                <td className="question-cell match-td-padded" dangerouslySetInnerHTML={{__html: row.labelHtml}}></td>
                 <td className="answer-expected-warning match-td-padded">
                 {
                   (answerExpected(rowIndex)) ?
