@@ -50,11 +50,11 @@
       "rows": [
         {
           "id": "row-1",
-          "labelHtml": "<div>The lengths of&nbsp;​<span data-latex=\"\\overline{AX}\\\"></span>​ and&nbsp;​<span data-latex=\"\\overline{XD}\"></span>​ satisfy the equation&nbsp;​<span data-latex=\"2AX=3XD\"></span>​.</div>"
+          "labelHtml": "<div>The lengths of&nbsp;​<span data-latex=\"\\overline{AX}\"></span>​ and&nbsp;​<span data-latex=\"\\overline{XD}\"></span>​ satisfy the equation&nbsp;​<span data-latex=\"2AX=3XD\"></span>​.</div>"
         },
         {
           "id": "row-2",
-          "labelHtml": "<div><div>The lengths&nbsp;​<span data-latex=\"\\overline{AX}\"></span>​,&nbsp;​<span data-latex=\"\\overline{BX}\"></span>​,&nbsp;​<span data-latex=\"\\overline{CX}\"></span>​, and&nbsp;​<span data-latex=\"\\overline{DX}\"></span>​ satisfy the equation&nbsp;</div>​<span data-latex=\"\\frac{AX}{BX}=\\frac{DX}{CX}\\\"></span>​.</div>"
+          "labelHtml": "<div><div>The lengths&nbsp;​<span data-latex=\"\\overline{AX}\"></span>​,&nbsp;​<span data-latex=\"\\overline{BX}\"></span>​,&nbsp;​<span data-latex=\"\\overline{CX}\"></span>​, and&nbsp;​<span data-latex=\"\\overline{DX}\"></span>​ satisfy the equation&nbsp;</div>​<span data-latex=\"\\frac{AX}{BX}=\\frac{DX}{CX}\"></span>​.</div>"
         },
         {
           "id": "row-3",

@@ -1,10 +1,12 @@
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import CorespringCorrectAnswerToggle from 'corespring-correct-answer-toggle';
 
 import update from 'immutability-helper';
 import * as _ from 'lodash';
 import ChoiceInput from './choice-input';
 import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon';
+import katex from 'katex';
 
 export default class CorespringMatch extends React.Component {
   
@@ -23,6 +25,22 @@ export default class CorespringMatch extends React.Component {
 
   _className() {
     return 'corespring-match-table';
+  }
+
+  _renderLatex() {
+    let element = ReactDOM.findDOMNode(this);
+    element.querySelectorAll('[data-latex]').forEach((latexElement) => {
+      let latex = latexElement.getAttribute('data-latex');
+      katex.render(latex, latexElement);
+    });
+  }
+
+  componentDidUpdate() {
+    this._renderLatex();
+  }
+
+  componentDidMount() {
+    this._renderLatex();
   }
 
   _prepareModel() {
