@@ -6,55 +6,67 @@
     {
       "id": "1",
       "element": "corespring-match",
-      "correctResponse": [
+      "correctResponse" : [ 
         {
           "id" : "row-1",
-          "matchSet" : [true,false]
-        },
+          "matchSet" : [ 
+            false, 
+            true
+          ]
+        }, 
         {
           "id" : "row-2",
-          "matchSet" : [true,false]
-        },
+          "matchSet" : [ 
+            true, 
+            false
+          ]
+        }, 
         {
           "id" : "row-3",
-          "matchSet" : [true,false]
-        },
+          "matchSet" : [ 
+            true, 
+            false
+          ]
+        }, 
         {
           "id" : "row-4",
-          "matchSet" : [true,false]
+          "matchSet" : [ 
+            true, 
+            false
+          ]
         }
       ],
       "columns": [
         {
-          "labelHtml": "Custom header"
-        },
-        {
           "labelHtml": "Column 1"
         },
         {
-          "labelHtml": "Column 2"
+          "labelHtml": "<div>Yes</div>"
+        },
+        {
+          "labelHtml": "<div>No</div>"
         }
       ],
       "rows" : [
         {
           "id" : "row-1",
-          "labelHtml": "Question text 1"
+          "labelHtml": "<div>The lengths of&nbsp;​<latex>\\overline{AX}</latex> and&nbsp;​<latex>\\overline{XD}</latex>​ satisfy the equation&nbsp;​<latex>2AX=3XD</latex>​.</div>"
         },
         {
           "id" : "row-2",
-          "labelHtml": "Question text 2"
+          "labelHtml": "<div><div>The lengths&nbsp;​<latex>\\overline{AX}</latex>​,&nbsp;​<latex>\\overline{BX}</latex>​,&nbsp;​<latex>\\overline{CX}</latex>​, and&nbsp;​<latex>\\overline{DX}</latex>​ satisfy the equation&nbsp;</div>​<latex>\\frac{AX}{BX}=\\frac{DX}{CX}</latex>​.</div>"
         },
         {
           "id" : "row-3",
-          "labelHtml": "Question text 3"
+          "labelHtml": "<div>Lines&nbsp;​<latex>\\overline{AB}</latex>​ and&nbsp;​<latex>\\overline{CD}</latex>​ are parallel.</div>"
         },
         {
           "id" : "row-4",
-          "labelHtml": "Question text 4"
+          "labelHtml": "<div>Angle&nbsp;​<latex>\\angle XAB</latex>​ is congruent to angle&nbsp;​<latex>\\angle XCD</latex>​.</div>"
         }
       ],
       "config": {
-        "inputType": "checkbox"
+        "inputType" : "radio"
       }
     }
   ]
