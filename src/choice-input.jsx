@@ -23,8 +23,10 @@ export class ChoiceInput extends React.Component {
     let theme = cloneDeep(this.props.muiTheme);
     if (this.props.correctness === 'correct') {
       theme.checkbox.disabledColor = theme.correctColor;
+      theme.radioButton.disabledColor = theme.correctColor;
     } else if (this.props.correctness === 'incorrect') {
       theme.checkbox.disabledColor = theme.incorrectColor;
+      theme.radioButton.disabledColor = theme.incorrectColor;
     }
     return theme;
   }
