@@ -148,7 +148,7 @@ describe('CorespringMatch', () => {
         it('contains labels from columns in config', () => {
           let header = wrapper.find('.header-row');
           header.find('th').forEach((th, index) => {
-            expect(th.text()).to.eql(config.model.columns[index].labelHtml);
+            expect(th.html().includes(config.model.columns[index].labelHtml)).to.eql(true);
           });
         });
       });
@@ -158,8 +158,8 @@ describe('CorespringMatch', () => {
         it('contains label', () => {
           let rows = wrapper.find('.question-row');
           rows.forEach((row, index) => {
-            expect(config.model.rows[index].labelHtml)
-                .to.eql(row.find('.question-cell').text());
+            expect(row.find('.question-cell').html().includes(config.model.rows[index].labelHtml))
+                .to.eql(true);
           });
         });
 
