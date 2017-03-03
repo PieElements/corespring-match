@@ -16,7 +16,7 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
   }
 
   _rerender() {
-    let element = ReactDOM.createElement(Main, {
+    let element = React.createElement(Main, {
       model: this._model
     });
     ReactDOM.render(element, this, () => {
@@ -25,7 +25,7 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
   }
 
   connectedCallback() {
-    
+
   }
 
 }
