@@ -44,7 +44,7 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
   _rerender() {
     let element = React.createElement(Main, {
       model: this._model,
-      onLayoutChanged: this.onLayoutChanged,
+      onLayoutChanged: this.onLayoutChanged.bind(this),
       onInputTypeChanged: this.onInputTypeChanged.bind(this)
     });
     ReactDOM.render(element, this, () => {
