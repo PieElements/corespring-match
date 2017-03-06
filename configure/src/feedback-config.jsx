@@ -12,7 +12,7 @@ class FeedbackConfig extends React.Component {
 
   render() {
     return <div className="feedback-config">
-      <Card expanded={true}>
+      <Card>
         <CardHeader title="Feedback" showExpandableButton={true}/>
         <CardText expandable={true}>
           <FeedbackSelector/>

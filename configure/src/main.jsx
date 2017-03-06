@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import React from 'react';
+import ReactDom from 'react-dom';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -20,9 +22,6 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
   }
-  componentDidUpdate() {
-    console.log('this.props.model', this.props.model);
-  }
 
   _getNumberOfColumnsForLayout(layout) {
     switch (layout) {
@@ -35,6 +34,15 @@ class Main extends React.Component {
     }
   }
 
+  set model(m) {
+    console.log('calling setModel');
+    this._model = m;
+  }
+
+  connectedCallback() {
+    this.dispatchEvent(new CustomEvent('pie.register', { bubbles: true }));
+  }
+
   _addRow() {
 
   }
@@ -42,7 +50,6 @@ class Main extends React.Component {
   _removeRow(index) {
 
   }
-
   render() {
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
@@ -54,12 +61,12 @@ class Main extends React.Component {
               rows. This interaction allows for either one or more correct answers. Setting more than one 
               answer as correct allows for partial credit (see the Scoring tab).
             </p>
-            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout}>
+            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged.bind(this)}>
               <MenuItem value="three-columns" primaryText="3 Columns"/>
               <MenuItem value="four-columns" primaryText="4 Columns"/>
               <MenuItem value="five-columns" primaryText="5 Columns"/>
             </SelectField>
-            <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType}>
+            <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged}>
               <MenuItem value="radio" primaryText="Radio - One Answer"/>
               <MenuItem value="checkbox" primaryText="Checkbox - Multiple Answers"/>
             </SelectField>
