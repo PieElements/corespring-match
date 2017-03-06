@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 export default class CorespringMatchConfigReactElement extends HTMLElement {
 
   constructor() {
+    console.log('constructing element');
     super();
     this._model = null;
     this._session = null;
@@ -21,7 +22,7 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
     });
     ReactDOM.render(element, this, () => {
       console.log('rendered config');
-    })
+    });
   }
 
   connectedCallback() {
