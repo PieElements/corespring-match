@@ -14,33 +14,47 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
     this._rerender();
   }
 
-  onLayoutChanged(event, key, layout) {
-    this._model.config.layout = layout;
-    this.modelDidUpdate();
-  }
+  modelDidUpdate(rerender) {
+    if (rerender) {
+      this._rerender();
+    }
 
-  onInputTypeChanged(event, key, inputType) {
-    this._model.config.inputType = inputType;
-    this.modelDidUpdate();
-  }
-
-  modelDidUpdate() {
     let detail = {
       update: this._model
     };
-    this._rerender();
     this.dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }));
+  }
+
+  onModelUpdate(path, rerender) {
+    let self = this;
+    rerender = (renrender === undefined ? true : rerender);
+
+    // This function sets the value of `obj` to `value` at `is`
+    function update(obj, is, value) {
+      if (typeof is === 'string') {
+        return update(obj, is.split('.'), value);
+      } else if (is.length === 1 && value !== undefined) {
+        return obj[is[0]] = value;
+      } else if (is.length === 0) {
+        return obj;
+      } else {
+        return update(obj[is[0]], is.slice(1), value);
+      }
+    }
+
+    return (event, key, value) => {
+      update(self._model, path, value);
+      self.modelDidUpdate(rerender);
+    };
   }
 
   _rerender() {
     let element = React.createElement(Main, {
       model: this._model,
-      onLayoutChanged: this.onLayoutChanged.bind(this),
-      onInputTypeChanged: this.onInputTypeChanged.bind(this)
+      onLayoutChanged: this.onModelUpdate('config.layout').bind(this),
+      onInputTypeChanged: this.onModelUpdate('config.inputType').bind(this)
     });
-    ReactDOM.render(element, this, () => {
-      console.log('rendered config');
-    });
+    ReactDOM.render(element, this);
   }
 
 }
