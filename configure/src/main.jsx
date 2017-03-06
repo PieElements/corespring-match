@@ -34,6 +34,15 @@ class Main extends React.Component {
     }
   }
 
+  set model(m) {
+    console.log('calling setModel');
+    this._model = m;
+  }
+
+  connectedCallback() {
+    this.dispatchEvent(new CustomEvent('pie.register', { bubbles: true }));
+  }
+
   _addRow() {
 
   }
@@ -41,17 +50,6 @@ class Main extends React.Component {
   _removeRow(index) {
 
   }
-
-  _onLayoutChange(event, key, payload) {
-    let updatedModel = _.cloneDeep(this.props.model);
-    updatedModel.config.layout = payload;
-
-    let detail = {
-      update: updatedModel
-    };
-    ReactDom.findDOMNode(this).dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }))
-  }
-
   render() {
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
@@ -63,12 +61,12 @@ class Main extends React.Component {
               rows. This interaction allows for either one or more correct answers. Setting more than one 
               answer as correct allows for partial credit (see the Scoring tab).
             </p>
-            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this._onLayoutChange.bind(this)}>
+            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged.bind(this)}>
               <MenuItem value="three-columns" primaryText="3 Columns"/>
               <MenuItem value="four-columns" primaryText="4 Columns"/>
               <MenuItem value="five-columns" primaryText="5 Columns"/>
             </SelectField>
-            <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType}>
+            <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged}>
               <MenuItem value="radio" primaryText="Radio - One Answer"/>
               <MenuItem value="checkbox" primaryText="Checkbox - Multiple Answers"/>
             </SelectField>
