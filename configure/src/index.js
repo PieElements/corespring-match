@@ -30,14 +30,13 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
   }
 
   onInputTypeChanged(event, key, inputType) {
-    let updatedModel = _.cloneDeep(this._model);
-    updatedModel.config.inputType = inputType;
+    this._model.config.inputType = inputType;
 
     let detail = {
-      update: updatedModel
+      update: this._model
     };
 
-    console.log('updatedModel', JSON.stringify(updatedModel, null, 2));
+    this.model = this._model;
     this.dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }));
   }
 
