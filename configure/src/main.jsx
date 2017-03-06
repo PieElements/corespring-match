@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import React from 'react';
+import ReactDom from 'react-dom';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -20,9 +22,6 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
   }
-  componentDidUpdate() {
-    console.log('this.props.model', this.props.model);
-  }
 
   _getNumberOfColumnsForLayout(layout) {
     switch (layout) {
@@ -43,6 +42,16 @@ class Main extends React.Component {
 
   }
 
+  _onLayoutChange(event, key, payload) {
+    let updatedModel = _.cloneDeep(this.props.model);
+    updatedModel.config.layout = payload;
+
+    let detail = {
+      update: updatedModel
+    };
+    ReactDom.findDOMNode(this).dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }))
+  }
+
   render() {
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
@@ -54,7 +63,7 @@ class Main extends React.Component {
               rows. This interaction allows for either one or more correct answers. Setting more than one 
               answer as correct allows for partial credit (see the Scoring tab).
             </p>
-            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout}>
+            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this._onLayoutChange.bind(this)}>
               <MenuItem value="three-columns" primaryText="3 Columns"/>
               <MenuItem value="four-columns" primaryText="4 Columns"/>
               <MenuItem value="five-columns" primaryText="5 Columns"/>
