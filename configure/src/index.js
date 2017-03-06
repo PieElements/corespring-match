@@ -26,7 +26,7 @@ export default class CorespringMatchConfigReactElement extends HTMLElement {
   }
 
   connectedCallback() {
-    
+
   }
 
 }
