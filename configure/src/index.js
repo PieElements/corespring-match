@@ -5,38 +5,30 @@ import ReactDOM from 'react-dom';
 export default class CorespringMatchConfigReactElement extends HTMLElement {
 
   constructor() {
-    console.log('constructing element');
     super();
     this._model = null;
-    this._session = null;
   }
 
   set model(s) {
     this._model = s;
-    console.log('setting model in element!');
     this._rerender();
   }
 
   onLayoutChanged(event, key, layout) {
-    let updatedModel = _.cloneDeep(this._model);
-    updatedModel.config.layout = layout;
-
-    let detail = {
-      update: updatedModel
-    };
-
-    console.log('updatedModel', JSON.stringify(updatedModel, null, 2));
-    this.dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }));
+    this._model.config.layout = layout;
+    this.modelDidUpdate();
   }
 
   onInputTypeChanged(event, key, inputType) {
     this._model.config.inputType = inputType;
+    this.modelDidUpdate();
+  }
 
+  modelDidUpdate() {
     let detail = {
       update: this._model
     };
-
-    this.model = this._model;
+    this._rerender();
     this.dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }));
   }
 
