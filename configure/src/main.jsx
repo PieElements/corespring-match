@@ -10,7 +10,10 @@ import Checkbox from 'material-ui/Checkbox';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import IconButton from 'material-ui/IconButton';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
 
+import EditableHTML from './editable-html';
 import FeedbackConfig from './feedback-config';
 
 require('./index.less');
@@ -34,22 +37,53 @@ class Main extends React.Component {
     }
   }
 
-  set model(m) {
-    console.log('calling setModel');
-    this._model = m;
+  _addRowToCorrectResponseMatrix(rowId) {
+    let createEmptyMatchSet = (length) => {
+      return _.range(length).map(function() {
+        return false;
+      });
+    }
+
+    let matchSet = createEmptyMatchSet(this.props.model.columns.length - 1);
+    this.props.model.correctResponse.push({
+      id: rowId,
+      matchSet: matchSet
+    });
   }
 
-  connectedCallback() {
-    this.dispatchEvent(new CustomEvent('pie.register', { bubbles: true }));
+  _addRow(event) {
+    let findFreeRowSlot = () => {
+      let slot = 1;
+      let rows = _.map(this.props.model.rows, 'id');
+      while (_.includes(rows, `row-${slot}`)) {
+        slot++;
+      }
+      return slot;
+    };
+    let slot = findFreeRowSlot();
+
+    this.props.model.rows.push({
+      id: `row-${slot}`,
+      labelHtml: `Question text ${slot}`
+    });
+    this._addRowToCorrectResponseMatrix(`row-${slot}`)
+    this.props.onRowsChanged(event, this.props.model.rows);
   }
 
-  _addRow() {
-
+  _deleteRow(index) {
+    this.props.model.rows.splice(index, 1);
+    this.props.onRowsChanged(event, this.props.model.rows);
   }
 
-  _removeRow(index) {
-
+  edit(index) {
+    console.log(`edit ${index}`);
   }
+
+  onChange(index, html) {
+    this.props.model.rows[index].labelHtml = html;
+    this.props.onRowsChanged(event, this.props.model.rows);
+  }
+
   render() {
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
@@ -61,7 +95,7 @@ class Main extends React.Component {
               rows. This interaction allows for either one or more correct answers. Setting more than one 
               answer as correct allows for partial credit (see the Scoring tab).
             </p>
-            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged.bind(this)}>
+            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged}>
               <MenuItem value="three-columns" primaryText="3 Columns"/>
               <MenuItem value="four-columns" primaryText="4 Columns"/>
               <MenuItem value="five-columns" primaryText="5 Columns"/>
@@ -90,13 +124,17 @@ class Main extends React.Component {
                 {
                   this.props.model.rows.map((row, index) => {
                     return <tr key={index}>
+                        <td>
+                          <EditableHTML model={row.labelHtml} onChange={this.onChange.bind(this, index)} />
+                        </td>
+                        <td><IconButton onClick={this._deleteRow.bind(this, index)}><ActionDelete/></IconButton></td>
                       </tr>;
                   })
                 }
               </tbody>
             </table>
-            <RaisedButton label="+ Add a row"/>
-            <Checkbox label="Shuffle Choices"/>
+            <RaisedButton label="+ Add a row" onClick={this._addRow.bind(this)}/>
+            <Checkbox label="Shuffle Choices" value={this.props.model.config.shuffle} onCheck={this.props.onShuffleChanged}/>
             <FeedbackConfig/>
           </Tab>
           <Tab label="Scoring">

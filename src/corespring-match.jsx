@@ -21,6 +21,12 @@ export default class CorespringMatch extends React.Component {
     });
   }
 
+  componentWillReceiveProps(props) {
+    this.setState({
+      model: this._prepareModel() 
+    });
+  }
+
   _className() {
     return 'corespring-match-table';
   }
@@ -104,6 +110,7 @@ export default class CorespringMatch extends React.Component {
       };
 
       let answersExist = (self.props.session && self.props.session.answers);
+      console.log('model rows:', self.props.model.rows);
       let rows = self.props.model.rows.map((row) => {
         let cloneRow = _.cloneDeep(row);
         cloneRow.matchSet = answersExist === true ? createMatchSetFromSession(row.id) : createEmptyMatchSet(self.props.model.columns.length - 1);
@@ -150,6 +157,7 @@ export default class CorespringMatch extends React.Component {
   render() {
     let self = this;
     let rows = this.state.model.rows;
+    console.log('rows in render', rows);
     let columns = this.state.model.columns;
     let disabled = this.props.mode !== 'gather';
     let showCorrect = (this.props.mode === 'evaluate' && this.state.showCorrect);

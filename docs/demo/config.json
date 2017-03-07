@@ -66,6 +66,7 @@
         }
       ],
       "config": {
+        "layout": "three-columns",
         "inputType": "radio"
       }
     }

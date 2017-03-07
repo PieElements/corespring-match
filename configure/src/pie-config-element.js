@@ -38,6 +38,10 @@ export default class PieConfigElement extends HTMLElement {
     }
 
     return (event, key, value) => {
+      // sometimes the material-ui signatures only pass 2 arguments.
+      if (value === undefined) {
+        value = key;
+      }
       update(self._model, path, value);
       self.modelDidUpdate(rerender);
     };

@@ -17,6 +17,7 @@
     "fetch": "^1.1.0",
     "frisbee": "^1.1.7",
     "immutability-helper": "^2.1.1",
+    "jquery": "^3.1.1",
     "less": "^2.7.1",
     "lodash": "^4.17.2",
     "material-ui": "^0.16.4",
@@ -24,6 +25,7 @@
     "react": "^15.4.1",
     "react-addons-css-transition-group": "^15.4.1",
     "react-dom": "^15.4.1",
+    "react-froala-wysiwyg": "^2.5.0",
     "react-inline-grid": "^0.5.3",
     "react-tap-event-plugin": "^2.0.1"
   },
