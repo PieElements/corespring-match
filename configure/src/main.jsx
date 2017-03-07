@@ -13,6 +13,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import IconButton from 'material-ui/IconButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 
+import ChoiceInput from '../../src/choice-input';
 import EditableHTML from './editable-html';
 import FeedbackConfig from './feedback-config';
 
@@ -84,6 +85,16 @@ class Main extends React.Component {
     this.props.onRowsChanged(event, this.props.model.rows);
   }
 
+  setCorrect(rowId, columnIndex, value) {
+    let row = _.find(this.props.model.correctResponse, (row) => {
+      return row.id === rowId;
+    });
+    if (row !== undefined) {
+      row.matchSet[columnIndex] = value.selected;
+    }
+    console.log(this.props.model.correctResponse);
+  }
+
   render() {
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
@@ -112,9 +123,9 @@ class Main extends React.Component {
               <thead>
                 <tr>
                   {
-                    this.props.model.columns.map((column, index) => {
-                      return <th key={index}>
-                        <TextField name={`col-${index}`} value={this.props.model.columns[index].labelHtml} onChange={this.modelUpdated} />
+                    this.props.model.columns.map((column, columnIndex) => {
+                      return <th key={columnIndex}>
+                        <TextField name={`col-${columnIndex}`} value={this.props.model.columns[columnIndex].labelHtml} onChange={this.modelUpdated} />
                       </th>;
                     })
                   }
@@ -122,12 +133,21 @@ class Main extends React.Component {
               </thead>
               <tbody>
                 {
-                  this.props.model.rows.map((row, index) => {
-                    return <tr key={index}>
+                  this.props.model.rows.map((row, rowIndex) => {
+                    return <tr key={rowIndex}>
                         <td>
-                          <EditableHTML model={row.labelHtml} onChange={this.onChange.bind(this, index)} />
+                          <EditableHTML model={row.labelHtml} onChange={this.onChange.bind(this, rowIndex)} />
                         </td>
-                        <td><IconButton onClick={this._deleteRow.bind(this, index)}><ActionDelete/></IconButton></td>
+                        {
+                          this.props.model.columns.map((column, columnIndex) => {
+                            return <td key={columnIndex}>
+                              <ChoiceInput choiceMode={this.props.model.config.inputType} 
+                                onChange={this.setCorrect.bind(this, row.id, columnIndex)}
+                                selected={this.props.model.correctResponse[rowIndex].matchSet[columnIndex]}/>
+                            </td>;
+                          })
+                        }
+                        <td><IconButton onClick={this._deleteRow.bind(this, rowIndex)}><ActionDelete/></IconButton></td>
                       </tr>;
                   })
                 }
