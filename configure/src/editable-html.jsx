@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
+import $ from 'jquery';
+import _ from 'lodash';
 import {Editor, EditorState, RichUtils} from 'draft-js';
 import {stateFromHTML} from 'draft-js-import-html';
 import {stateToHTML} from 'draft-js-export-html';
@@ -10,15 +12,22 @@ export default class EditableHTML extends React.Component {
 
   constructor(props) {
     super(props);
+    const content = this.props.model === undefined ? '' : this.props.model;
     this.state = {
       showToolbar: false,
       active: false,
-      editorState: EditorState.createWithContent(stateFromHTML(this.props.model))
+      editorState: EditorState.createWithContent(stateFromHTML(content))
     };
-    this.onChange = (editorState) => {
-      this.setState({editorState});
-      this.props.onChange(stateToHTML(editorState.getCurrentContent()));
-    }
+
+  }
+
+  onChange(editorState) {
+    const content = stateToHTML(editorState.getCurrentContent());
+    this.setState({editorState});
+    this.setState({
+      hasText: !_.isEmpty($(content).text())
+    });
+    this.props.onChange(content);
   }
 
   handleKeyCommand(command) {
@@ -58,7 +67,6 @@ export default class EditableHTML extends React.Component {
   }
 
   render() {
-    console.log('and render');
     return (
       <div className="editable-html-container">{
         (this.state.active === true) ? (
@@ -70,12 +78,17 @@ export default class EditableHTML extends React.Component {
                 onBlur={this.onEditorBlur.bind(this)}
                 editorState={this.state.editorState}
                 handleKeyCommand={this.handleKeyCommand.bind(this)}
-                onChange={this.onChange} />
+                onChange={this.onChange.bind(this)} />
             </div>
           </div>
         ) : (
-          <div dangerouslySetInnerHTML={{__html: this.props.model}} onClick={this.toggleHtml.bind(this)}></div>
-        ) 
+          this.state.hasText ? (
+            <div dangerouslySetInnerHTML={{__html: stateToHTML(this.state.editorState.getCurrentContent())}} 
+              onClick={this.toggleHtml.bind(this)}></div>
+          ) : (
+            <div onClick={this.toggleHtml.bind(this)}>{this.props.placeholder}</div>
+          )
+        )
       }</div>
     );
   }

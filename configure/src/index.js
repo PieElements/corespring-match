@@ -15,6 +15,7 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
       onLayoutChanged: this.onModelUpdate('config.layout').bind(this),
       onInputTypeChanged: this.onModelUpdate('config.inputType').bind(this),
       onShuffleChanged: this.onModelUpdate('config.shuffle').bind(this),
+      onFeedbackChanged: this.onModelUpdate('feedback').bind(this),
       onRowsChanged: this.onModelUpdate('rows').bind(this)
     });
     ReactDOM.render(element, this);

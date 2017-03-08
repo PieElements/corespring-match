@@ -18,6 +18,7 @@ export default class PieConfigElement extends HTMLElement {
     let detail = {
       update: this._model
     };
+    console.log('modelDidUpdate', this._model);
     this.dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }));
   }
 

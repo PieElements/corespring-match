@@ -85,6 +85,12 @@ class Main extends React.Component {
     this.props.onRowsChanged(event, this.props.model.rows);
   }
 
+  onFeedbackChange(feedback) {
+    this.props.model.feedback = feedback;
+    this.props.onFeedbackChanged(this.props.model.feedback);
+    console.log('feedback changed');
+  }
+
   setCorrect(rowId, columnIndex, value) {
     let row = _.find(this.props.model.correctResponse, (row) => {
       return row.id === rowId;
@@ -155,7 +161,12 @@ class Main extends React.Component {
             </table>
             <RaisedButton label="+ Add a row" onClick={this._addRow.bind(this)}/>
             <Checkbox label="Shuffle Choices" value={this.props.model.config.shuffle} onCheck={this.props.onShuffleChanged}/>
-            <FeedbackConfig/>
+            <FeedbackConfig 
+              feedback={this.props.model.feedback} 
+              onChange={this.onFeedbackChange.bind(this)}
+              defaultCorrectFeedback="Correct"
+              defaultPartialFeedback="Almost!"
+              defaultIncorrectFeedback="Incorrect" />
           </Tab>
           <Tab label="Scoring">
             <div>
