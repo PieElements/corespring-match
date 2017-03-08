@@ -14,6 +14,7 @@
     "corespring-correct-answer-toggle": "^3.0.0",
     "corespring-icon": "PieElements/corespring-icon#master",
     "corespring-editable-html": "corespring/corespring-editable-html#master",
+    "corespring-config-panel": "corespring/corespring-feedback-config#master",
     "dns": "^0.2.2",
     "draft-js": "^0.10.0",
     "draft-js-export-html": "^0.5.2",
