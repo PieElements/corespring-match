@@ -14,8 +14,8 @@ import IconButton from 'material-ui/IconButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 
 import ChoiceInput from '../../src/choice-input';
-import EditableHTML from './editable-html';
-import FeedbackConfig from './feedback-config';
+import EditableHTML from 'corespring-editable-html/src/index.jsx';
+import FeedbackConfig from 'corespring-feedback-config/src/index.jsx';
 
 require('./index.less');
 
@@ -142,6 +142,7 @@ class Main extends React.Component {
                   this.props.model.rows.map((row, rowIndex) => {
                     return <tr key={rowIndex}>
                         <td>
+                          HERE:
                           <EditableHTML model={row.labelHtml} onChange={this.onChange.bind(this, rowIndex)} />
                         </td>
                         {
