@@ -10,3 +10,4 @@ typings
 typings.json
 .eslintrc.json
 .vscode
+docs/demo/info.config.js

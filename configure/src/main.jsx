@@ -143,7 +143,7 @@ class Main extends React.Component {
                     return <tr key={rowIndex}>
                         <td>
                           HERE:
-                          <EditableHTML model={row.labelHtml} onChange={this.onChange.bind(this, rowIndex)} />
+                          <EditableHTML model={row.labelHtml} placeholder="Question text" onChange={this.onChange.bind(this, rowIndex)} />
                         </td>
                         {
                           this.props.model.columns.map((column, columnIndex) => {
