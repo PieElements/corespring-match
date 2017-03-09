@@ -10,6 +10,44 @@ const colorMap = {
   black_on_white: 'default'
 };
 
+const Feedback = {
+  defaults: {
+    correct: "Correct!",
+    incorrect: "Good try but that is not the correct answer",
+    partial: "Almost!",
+    notChosen: "This answer is correct",
+    warning: "You did not enter a a response."
+  }
+}
+
+function getFeedback(question, answer, settings, numAnswered, numAnsweredCorrectly, totalCorrectAnswers) {
+  function getCorrectness() {
+    return (numAnswered === 0) ? 'warning' : (numAnsweredCorrectly === totalCorrectAnswers) ? 'correct' : (
+      (numAnsweredCorrectly > 0) ? 'partial' : 'incorrect'
+    );
+  }
+  
+  function getFeedbackMessage(correctness) {
+    let key = `${correctness}FeedbackType`;
+    let feedback = question.feedback;
+    let feedbackType = (feedback && feedback[key]) ? feedback[key] : 'default';
+
+    switch(feedbackType) {
+      case 'custom':
+        return feedback[`${correctness}Feedback`];
+      case 'default':
+        return Feedback.defaults[correctness];
+      default:
+        return undefined;
+    }
+  }
+
+  let correctness = getCorrectness();
+  return {
+    correctness: correctness,
+    feedback: getFeedbackMessage(correctness)
+  };
+}
 
 function countIncorrect(acc, correct_answer_pair) {
   var correct = correct_answer_pair[0];
@@ -54,7 +92,6 @@ export function outcome(question, session) {
 }
 
 export function model(question, session, env) {
-
 
   function countTrueValues(arr) {
     return _.reduce(arr, countWhenTrue, 0);
@@ -133,11 +170,16 @@ export function model(question, session, env) {
     response.columns = question.columns;
     response.rows = question.rows || [];
     response.config = question.config;
+
     if (env.mode === 'evaluate') {
       if (session !== undefined) {
         let numAnsweredCorrectly = countCorrectAnswers(session.answers, question.correctResponse);
         let totalCorrectAnswers = countCorrectAnswers(question.correctResponse, question.correctResponse); 
         response.correctness = (numAnsweredCorrectly === totalCorrectAnswers) ? 'correct' : 'incorrect';
+
+        let settings = {showFeedback: true};
+        let feedback = getFeedback(question, session.answers, settings, response.numAnswers, numAnsweredCorrectly, totalCorrectAnswers);
+        _.merge(response, feedback);
       }
 
       response.correctnessMatrix = buildCorrectnessMatrix(question, session.answers);

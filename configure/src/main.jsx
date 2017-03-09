@@ -93,6 +93,7 @@ class Main extends React.Component {
   onFeedbackChange(feedback) {
     this.props.model.feedback = feedback;
     this.props.onFeedbackChanged(this.props.model.feedback);
+    console.log('hola feedbag', this.props.model.feedback);
   }
 
   setCorrect(rowId, columnIndex, value) {
@@ -114,66 +115,69 @@ class Main extends React.Component {
       <div className="corespring-match-config-root">
         <Tabs>
           <Tab label="Design">
-            <p>
-              In Choice Matrix, students associate choices in the first column with options in the adjacent 
-              rows. This interaction allows for either one or more correct answers. Setting more than one 
-              answer as correct allows for partial credit (see the Scoring tab).
-            </p>
-            <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged}>
-              <MenuItem value="three-columns" primaryText="3 Columns"/>
-              <MenuItem value="four-columns" primaryText="4 Columns"/>
-              <MenuItem value="five-columns" primaryText="5 Columns"/>
-            </SelectField>
-            <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged}>
-              <MenuItem value="radio" primaryText="Radio - One Answer"/>
-              <MenuItem value="checkbox" primaryText="Checkbox - Multiple Answers"/>
-            </SelectField>
-            <p>
-              Click on the labels to edit or remove. Set the correct answers by clicking each correct
-              answer per row.
-            </p>
-            <table>
-              <thead>
-                <tr className="corespring-match-row">
+            <div className="design-tab">
+              <p>
+                In Choice Matrix, students associate choices in the first column with options in the adjacent 
+                rows. This interaction allows for either one or more correct answers. Setting more than one 
+                answer as correct allows for partial credit (see the Scoring tab).
+              </p>
+              <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged}>
+                <MenuItem value="three-columns" primaryText="3 Columns"/>
+                <MenuItem value="four-columns" primaryText="4 Columns"/>
+                <MenuItem value="five-columns" primaryText="5 Columns"/>
+              </SelectField>
+              <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged}>
+                <MenuItem value="radio" primaryText="Radio - One Answer"/>
+                <MenuItem value="checkbox" primaryText="Checkbox - Multiple Answers"/>
+              </SelectField>
+              <p>
+                Click on the labels to edit or remove. Set the correct answers by clicking each correct
+                answer per row.
+              </p>
+              <table>
+                <thead>
+                  <tr className="corespring-match-row">
+                    {
+                      this.props.model.columns.map((column, columnIndex) => {
+                        return <th key={columnIndex}>
+                          <EditableHTML model={this.props.model.columns[columnIndex].labelHtml} placeholder={`Column ${columnIndex + 1}`} onChange={this.onHeaderChange.bind(this, columnIndex)} />
+                        </th>;
+                      })
+                    }
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
                   {
-                    this.props.model.columns.map((column, columnIndex) => {
-                      return <th key={columnIndex}>
-                        <EditableHTML model={this.props.model.columns[columnIndex].labelHtml} placeholder={`Column ${columnIndex + 1}`} onChange={this.onHeaderChange.bind(this, columnIndex)} />
-                      </th>;
+                    this.props.model.rows.map((row, rowIndex) => {
+                      return <tr className="corespring-match-row" key={rowIndex}>
+                          <td>
+                            <EditableHTML model={row.labelHtml} placeholder="Question text" onChange={this.onQuestionChange.bind(this, rowIndex)} />
+                          </td>
+                          {
+                            this.props.model.columns.slice(1, this.props.model.columns.length).map((column, columnIndex) => {
+                              return <td className="answer-col" key={columnIndex}>
+                                <ChoiceInput choiceMode={this.props.model.config.inputType} 
+                                  onChange={this.setCorrect.bind(this, row.id, columnIndex)}
+                                  checked={this.props.model.correctResponse[rowIndex].matchSet[columnIndex]}/>
+                              </td>;
+                            })
+                          }
+                          <td><IconButton onClick={this._deleteRow.bind(this, rowIndex)}><ActionDelete/></IconButton></td>
+                        </tr>;
                     })
                   }
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  this.props.model.rows.map((row, rowIndex) => {
-                    return <tr className="corespring-match-row" key={rowIndex}>
-                        <td>
-                          <EditableHTML model={row.labelHtml} placeholder="Question text" onChange={this.onQuestionChange.bind(this, rowIndex)} />
-                        </td>
-                        {
-                          this.props.model.columns.slice(1, this.props.model.columns.length).map((column, columnIndex) => {
-                            return <td className="answer-col" key={columnIndex}>
-                              <ChoiceInput choiceMode={this.props.model.config.inputType} 
-                                onChange={this.setCorrect.bind(this, row.id, columnIndex)}
-                                checked={this.props.model.correctResponse[rowIndex].matchSet[columnIndex]}/>
-                            </td>;
-                          })
-                        }
-                        <td><IconButton onClick={this._deleteRow.bind(this, rowIndex)}><ActionDelete/></IconButton></td>
-                      </tr>;
-                  })
-                }
-              </tbody>
-            </table>
-            <RaisedButton label="+ Add a row" onClick={this._addRow.bind(this)}/>
-            <Checkbox label="Shuffle Choices" value={this.props.model.config.shuffle} onCheck={this.props.onShuffleChanged}/>
-            <FeedbackConfig 
-              feedback={this.props.model.feedback} 
-              onChange={this.onFeedbackChange.bind(this)}
-              defaultCorrectFeedback="Correct"
-              defaultPartialFeedback="Almost!"
-              defaultIncorrectFeedback="Incorrect" />
+                </tbody>
+              </table>
+              <RaisedButton label="+ Add a row" onClick={this._addRow.bind(this)}/>
+              <Checkbox label="Shuffle Choices" value={this.props.model.config.shuffle} onCheck={this.props.onShuffleChanged}/>
+              <FeedbackConfig 
+                feedback={this.props.model.feedback} 
+                onChange={this.onFeedbackChange.bind(this)}
+                defaultCorrectFeedback="Correct"
+                defaultPartialFeedback="Almost!"
+                defaultIncorrectFeedback="Incorrect" />
+            </div>
           </Tab>
           <Tab label="Scoring">
             <div>

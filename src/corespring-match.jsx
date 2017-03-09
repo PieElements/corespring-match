@@ -5,6 +5,7 @@ import update from 'immutability-helper';
 import * as _ from 'lodash';
 import ChoiceInput from './choice-input';
 import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon';
+import FeedbackPanel from 'corespring-feedback-panel';
 
 export default class CorespringMatch extends React.Component {
   
@@ -167,7 +168,7 @@ export default class CorespringMatch extends React.Component {
     }
 
     let correctness = (rowIndex, columnIndex) => {
-      if (showCorrect) {
+      if (showCorrect && this.props.model.correctResponse) {
         return this.props.model.correctResponse[rowIndex].matchSet[columnIndex] ? 'correct' : undefined;
       } else if (this.props.model.correctnessMatrix) {
         return this.props.model.correctnessMatrix[rowIndex].matchSet[columnIndex].correctness;
@@ -249,6 +250,7 @@ export default class CorespringMatch extends React.Component {
           }
         </tbody>
       </table>
+      <FeedbackPanel feedback={this.props.model.feedback} correctness={this.props.model.correctness} />
     </div>;
   }
 
