@@ -14,7 +14,7 @@ import IconButton from 'material-ui/IconButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 
 import ChoiceInput from '../../src/choice-input';
-import EditableHTML from 'corespring-editable-html/src/index.jsx';
+import EditableHTML from 'corespring-editable-html';
 import FeedbackConfig from 'corespring-feedback-config/src/index.jsx';
 
 require('./index.less');
@@ -80,15 +80,19 @@ class Main extends React.Component {
     console.log(`edit ${index}`);
   }
 
-  onChange(index, html) {
+  onQuestionChange(index, html) {
     this.props.model.rows[index].labelHtml = html;
     this.props.onRowsChanged(event, this.props.model.rows);
+  }
+
+  onHeaderChange(index, html) {
+    this.props.model.columns[index].labelHtml = html;
+    this.props.onColumnsChanged(event, this.props.model.columns);
   }
 
   onFeedbackChange(feedback) {
     this.props.model.feedback = feedback;
     this.props.onFeedbackChanged(this.props.model.feedback);
-    console.log('feedback changed');
   }
 
   setCorrect(rowId, columnIndex, value) {
@@ -96,9 +100,12 @@ class Main extends React.Component {
       return row.id === rowId;
     });
     if (row !== undefined) {
+      if (this.props.model.config.inputType === 'radio') {
+        row.matchSet = _.times(this.props.model.columns.length - 1, _.constant(false));
+      }
       row.matchSet[columnIndex] = value.selected;
     }
-    console.log(this.props.model.correctResponse);
+    this.props.onCorrectChanged(this.props.model.correctResponse);
   }
 
   render() {
@@ -127,11 +134,11 @@ class Main extends React.Component {
             </p>
             <table>
               <thead>
-                <tr>
+                <tr className="corespring-match-row">
                   {
                     this.props.model.columns.map((column, columnIndex) => {
                       return <th key={columnIndex}>
-                        <TextField name={`col-${columnIndex}`} value={this.props.model.columns[columnIndex].labelHtml} onChange={this.modelUpdated} />
+                        <EditableHTML model={this.props.model.columns[columnIndex].labelHtml} placeholder={`Column ${columnIndex + 1}`} onChange={this.onHeaderChange.bind(this, columnIndex)} />
                       </th>;
                     })
                   }
@@ -140,17 +147,16 @@ class Main extends React.Component {
               <tbody>
                 {
                   this.props.model.rows.map((row, rowIndex) => {
-                    return <tr key={rowIndex}>
+                    return <tr className="corespring-match-row" key={rowIndex}>
                         <td>
-                          HERE:
-                          <EditableHTML model={row.labelHtml} placeholder="Question text" onChange={this.onChange.bind(this, rowIndex)} />
+                          <EditableHTML model={row.labelHtml} placeholder="Question text" onChange={this.onQuestionChange.bind(this, rowIndex)} />
                         </td>
                         {
-                          this.props.model.columns.map((column, columnIndex) => {
-                            return <td key={columnIndex}>
+                          this.props.model.columns.slice(1, this.props.model.columns.length).map((column, columnIndex) => {
+                            return <td className="answer-col" key={columnIndex}>
                               <ChoiceInput choiceMode={this.props.model.config.inputType} 
                                 onChange={this.setCorrect.bind(this, row.id, columnIndex)}
-                                selected={this.props.model.correctResponse[rowIndex].matchSet[columnIndex]}/>
+                                checked={this.props.model.correctResponse[rowIndex].matchSet[columnIndex]}/>
                             </td>;
                           })
                         }

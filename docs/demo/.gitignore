@@ -4,5 +4,6 @@
 .controllers-map.js
 bower_components/
 controllers/
+info.config.js
 node_modules/
 package.json

@@ -55,7 +55,6 @@ export class ChoiceInput extends React.Component {
 
 ChoiceInput.propTypes = {
   choiceMode: React.PropTypes.oneOf(['radio', 'checkbox']),
-  choiceMode: PropTypes.string,
   checked: PropTypes.bool,
   correct: PropTypes.bool,
   correctness: PropTypes.string,
