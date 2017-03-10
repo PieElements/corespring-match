@@ -169,8 +169,10 @@ class Main extends React.Component {
                   }
                 </tbody>
               </table>
-              <RaisedButton label="+ Add a row" onClick={this._addRow.bind(this)}/>
-              <div class="shuffle">
+              <div className="add-row">
+                <RaisedButton label="+ Add a row" onClick={this._addRow.bind(this)}/>
+              </div>
+              <div className="shuffle">
                 <Checkbox label="Shuffle Choices" value={this.props.model.config.shuffle} onCheck={this.props.onShuffleChanged}/>
               </div>
               <FeedbackConfig 

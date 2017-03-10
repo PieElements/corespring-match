@@ -25,6 +25,7 @@ export default class CorespringMatchReactElement extends HTMLElement {
   }
 
   _onChange(data) {
+    console.log(data);
     var event = new CustomEvent('pie', {
       bubbles: true,
       detail: {

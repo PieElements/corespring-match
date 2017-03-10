@@ -22,6 +22,7 @@ const Feedback = {
 
 function getFeedback(question, answer, settings, numAnswered, numAnsweredCorrectly, totalCorrectAnswers) {
   function getCorrectness() {
+    console.log('numAnswered', numAnswered);
     return (numAnswered === 0) ? 'warning' : (numAnsweredCorrectly === totalCorrectAnswers) ? 'correct' : (
       (numAnsweredCorrectly > 0) ? 'partial' : 'incorrect'
     );
@@ -172,18 +173,20 @@ export function model(question, session, env) {
     response.config = question.config;
 
     if (env.mode === 'evaluate') {
+      let numAnswered = numberOfAnswers(session.answers);
+
       if (session !== undefined) {
         let numAnsweredCorrectly = countCorrectAnswers(session.answers, question.correctResponse);
         let totalCorrectAnswers = countCorrectAnswers(question.correctResponse, question.correctResponse); 
         response.correctness = (numAnsweredCorrectly === totalCorrectAnswers) ? 'correct' : 'incorrect';
 
         let settings = {showFeedback: true};
-        let feedback = getFeedback(question, session.answers, settings, response.numAnswers, numAnsweredCorrectly, totalCorrectAnswers);
+        let feedback = getFeedback(question, session.answers, settings, numAnswered, numAnsweredCorrectly, totalCorrectAnswers);
         _.merge(response, feedback);
       }
 
       response.correctnessMatrix = buildCorrectnessMatrix(question, session.answers);
-      response.numAnswers = numberOfAnswers(session.answers);
+      response.numAnswers = numAnswered;
       response.correctResponse = question.correctResponse;
     }
 

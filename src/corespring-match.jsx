@@ -40,7 +40,6 @@ export default class CorespringMatch extends React.Component {
     const TRUE_LABEL = 'True';
     const FALSE_LABEL = 'False';
 
-
     let self = this;
 
     let prepareColumns = () => {
@@ -136,8 +135,9 @@ export default class CorespringMatch extends React.Component {
     };
 
     let callback = () => {
-      this.props.session.answers = stateToSession(this.state);
-      this.props.onChange(this.props.session);
+      let session = stateToSession(this.state);
+      this.props.session.answers = session;
+      this.props.onChange(session);
     };
 
     if (this.props.model.config.inputType === 'radio') {
@@ -160,6 +160,8 @@ export default class CorespringMatch extends React.Component {
     let columns = this.state.model.columns;
     let disabled = this.props.mode !== 'gather';
     let showCorrect = (this.props.mode === 'evaluate' && this.state.showCorrect);
+
+    console.log('this.props.session', this.props.session);
 
     let correctness = (rowIndex, columnIndex) => {
       if (showCorrect && this.props.model.correctResponse) {
@@ -190,8 +192,6 @@ export default class CorespringMatch extends React.Component {
         return correctChecked || rows[rowIndex].matchSet[columnIndex].value;
       }
     };
-
-    console.log('this.props.model', this.props.model);
 
     let showToggle = this.props.mode === 'evaluate' && this.props.model.numAnswers !== 0 && this.props.model.correctness !== 'correct';
 
@@ -250,7 +250,6 @@ export default class CorespringMatch extends React.Component {
       {
         (this.state.showCorrect) ? <div/> : <FeedbackPanel feedback={this.props.model.feedback} correctness={this.props.model.correctness} />
       }
-      
     </div>;
   }
 
