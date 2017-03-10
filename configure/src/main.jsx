@@ -117,7 +117,7 @@ class Main extends React.Component {
           <Tab label="Design">
             <div className="design-tab">
               <p>
-                In Choice Matrix, students associate choices in the first column with options in the adjacent 
+                In corespring-match, students associate choices in the first column with options in the adjacent 
                 rows. This interaction allows for either one or more correct answers. Setting more than one 
                 answer as correct allows for partial credit (see the Scoring tab).
               </p>

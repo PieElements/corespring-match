@@ -120,7 +120,7 @@ export default class CorespringMatch extends React.Component {
 
     return {
       columns: prepareColumns(),
-      rows: this.props.model.shuffle ? _.shuffle(prepareRows()) : prepareRows()
+      rows: prepareRows() //this.props.model.config.shuffle ? _.shuffle(prepareRows()) : prepareRows()
     };
   }
 
