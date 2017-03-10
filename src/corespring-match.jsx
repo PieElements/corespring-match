@@ -191,6 +191,8 @@ export default class CorespringMatch extends React.Component {
       }
     };
 
+    console.log('this.props.model', this.props.model);
+
     let showToggle = this.props.mode === 'evaluate' && this.props.model.numAnswers !== 0 && this.props.model.correctness !== 'correct';
 
     return <div className="corespring-match">
@@ -245,7 +247,10 @@ export default class CorespringMatch extends React.Component {
           }
         </tbody>
       </table>
-      <FeedbackPanel feedback={this.props.model.feedback} correctness={this.props.model.correctness} />
+      {
+        (this.state.showCorrect) ? <div/> : <FeedbackPanel feedback={this.props.model.feedback} correctness={this.props.model.correctness} />
+      }
+      
     </div>;
   }
 
