@@ -12,10 +12,13 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import IconButton from 'material-ui/IconButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 
 import ChoiceInput from '../../src/choice-input';
 import EditableHTML from 'corespring-editable-html';
 import FeedbackConfig from 'corespring-feedback-config/src/index.jsx';
+import PartialScoringConfig from 'corespring-scoring-config/src/index.jsx';
+import MultiPartialScoringConfig from './multi-partial-scoring-config';
 
 require('./index.less');
 
@@ -25,6 +28,7 @@ class Main extends React.Component {
 
   constructor(props) {
     super(props);
+    this._updatePartialScoring();
   }
 
   _getNumberOfColumnsForLayout(layout) {
@@ -34,7 +38,7 @@ class Main extends React.Component {
       case 'five-columns':
         return 5;
       default:
-        return this.MIN_COLUMNS;
+        return Main.MIN_COLUMNS;
     }
   }
 
@@ -93,7 +97,66 @@ class Main extends React.Component {
   onFeedbackChange(feedback) {
     this.props.model.feedback = feedback;
     this.props.onFeedbackChanged(this.props.model.feedback);
-    console.log('hola feedbag', this.props.model.feedback);
+  }
+
+  onPartialScoringChange(partialScoring) {
+    this.props.model.partialScoring = partialScoring;
+    this._updatePartialScoring();
+  }
+
+  _updatePartialScoring() {
+    if (!this.props.model.partialScoring || this.props.model.partialScoring.length === 0) {
+      this.props.model.partialScoring = [{}];
+    }
+    if (this.props.model.config.inputType === Main.InputTypes.Checkbox) {
+      this.props.model.partialScoring = this.props.model.partialScoring || {
+        sections: []
+      };
+      if (_.isArray(this.props.model.partialScoring)) {
+        this.props.model.partialScoring = {
+          sections: []
+        }
+      }
+
+      _.each(this.props.model.rows, (row, index) => {
+        let partialSection = _.find(this.props.model.partialScoring.sections, {
+          catId: row.id
+        });
+        if (!partialSection) {
+          partialSection = {
+            catId: row.id,
+            label: `Row ${index + 1}`,
+            partialScoring: []
+          };
+          this.props.model.partialScoring.sections.push(partialSection);
+        }
+        let correctResponseForRow = _.find(this.props.model.correctResponse, { id: row.id });
+        let trueCount = _.reduce(correctResponseForRow.matchSet, (acc, m) => {
+          return acc + (m ? 1 : 0);
+        });
+        partialSection.numberOfCorrectResponses = Math.max(trueCount, 0);
+        partialSection.partialScoring = _.filter(partialSection.partialScoring, (ps) => {
+          return ps.numberOfCorrect < trueCount;
+        });
+      });
+      this.props.model.partialScoring.sections = _.filter(this.props.model.partialScoring.sections, (section) => {
+        return _.find(this.props.model.rows, {
+          id: section.catId
+        });
+      });
+    } else if (this.props.model.config.inputType === Main.InputTypes.Radio) {
+      this.props.model.partialScoring = this.props.model.partialScoring || [];
+      if (!_.isArray(this.props.model.partialScoring)) {
+        this.props.model.partialScoring = [];
+      }
+    }
+  }
+
+  _sumCorrectAnswers() {
+    let total = _.reduce(this.props.model.correctResponse, (sum, row) => {
+      return sum + ((row.matchSet && row.matchSet.indexOf(true) >= 0) ? 1 : 0);
+    }, 0);
+    return total;
   }
 
   setCorrect(rowId, columnIndex, value) {
@@ -107,6 +170,7 @@ class Main extends React.Component {
       row.matchSet[columnIndex] = value.selected;
     }
     this.props.onCorrectChanged(this.props.model.correctResponse);
+    this._updatePartialScoring();
   }
 
   render() {
@@ -127,8 +191,8 @@ class Main extends React.Component {
                 <MenuItem value="five-columns" primaryText="5 Columns"/>
               </SelectField>
               <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged}>
-                <MenuItem value="radio" primaryText="Radio - One Answer"/>
-                <MenuItem value="checkbox" primaryText="Checkbox - Multiple Answers"/>
+                <MenuItem value={Main.InputTypes.Radio} primaryText="Radio - One Answer"/>
+                <MenuItem value={Main.InputTypes.Checkbox} primaryText="Checkbox - Multiple Answers"/>
               </SelectField>
               <p>
                 Click on the labels to edit or remove. Set the correct answers by clicking each correct
@@ -184,8 +248,20 @@ class Main extends React.Component {
             </div>
           </Tab>
           <Tab label="Scoring">
-            <div>
-              Scoring!
+            <div className="scoring-tab">{
+                (this.props.model.config.inputType === Main.InputTypes.Radio) ? (
+                  <PartialScoringConfig 
+                    numberOfCorrectResponses={this._sumCorrectAnswers()}
+                    partialScoring={this.props.model.partialScoring}
+                    onPartialScoringChange={this.onPartialScoringChange.bind(this)} />
+                ) : (this.props.model.config.inputType === Main.InputTypes.Checkbox) ? (
+                  <MultiPartialScoringConfig
+                    headerText="If there is more than one correct answer per row, you may allow partial credit based on the number of correct answers submitted per row. This is optional."
+                    onPartialScoringChange={this.onPartialScoringChange.bind(this)}
+                  />
+                ) : 
+                  <div/>
+              }
             </div>
           </Tab>
         </Tabs>
@@ -196,5 +272,10 @@ class Main extends React.Component {
 }
 
 Main.MIN_COLUMNS = 3;
+
+Main.InputTypes = {
+  Checkbox: 'checkbox',
+  Radio: 'radio'
+};
 
 export default Main;
