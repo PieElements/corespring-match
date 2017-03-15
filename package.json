@@ -17,6 +17,7 @@
     "corespring-feedback-panel": "corespring/corespring-feedback-panel#master",
     "corespring-icon": "PieElements/corespring-icon#master",
     "corespring-scoring-config": "corespring/corespring-scoring-config#master",
+    "choice-input": "corespring/choice-input#master",
     "dns": "^0.2.2",
     "draft-js": "^0.10.0",
     "draft-js-export-html": "^0.5.2",

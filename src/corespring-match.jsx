@@ -3,7 +3,7 @@ import CorespringCorrectAnswerToggle from 'corespring-correct-answer-toggle';
 
 import update from 'immutability-helper';
 import * as _ from 'lodash';
-import ChoiceInput from './choice-input';
+import ChoiceInput from 'choice-input';
 import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon';
 import FeedbackPanel from 'corespring-feedback-panel';
 
@@ -237,6 +237,7 @@ export default class CorespringMatch extends React.Component {
                           checked={checked(rowIndex, columnIndex)}
                           disabled={disabled}
                           correctness={correctness(rowIndex, columnIndex)}
+                          showFeedbackTick={false}
                           onChange={(result) => { self.change(rowIndex, columnIndex, result.selected); }}
                         />
                     </td>;

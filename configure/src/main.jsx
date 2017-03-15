@@ -14,7 +14,7 @@ import IconButton from 'material-ui/IconButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 
-import ChoiceInput from '../../src/choice-input';
+import ChoiceInput from 'choice-input';
 import EditableHTML from 'corespring-editable-html';
 import FeedbackConfig from 'corespring-feedback-config/src/index.jsx';
 import PartialScoringConfig from 'corespring-scoring-config/src/index.jsx';
