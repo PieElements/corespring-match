@@ -28,7 +28,6 @@ class Main extends React.Component {
 
   constructor(props) {
     super(props);
-    this._updatePartialScoring();
   }
 
   _getNumberOfColumnsForLayout(layout) {
@@ -100,56 +99,7 @@ class Main extends React.Component {
   }
 
   onPartialScoringChange(partialScoring) {
-    this.props.model.partialScoring = partialScoring;
-    this._updatePartialScoring();
-  }
-
-  _updatePartialScoring() {
-    if (!this.props.model.partialScoring || this.props.model.partialScoring.length === 0) {
-      this.props.model.partialScoring = [{}];
-    }
-    if (this.props.model.config.inputType === Main.InputTypes.Checkbox) {
-      this.props.model.partialScoring = this.props.model.partialScoring || {
-        sections: []
-      };
-      if (_.isArray(this.props.model.partialScoring)) {
-        this.props.model.partialScoring = {
-          sections: []
-        }
-      }
-
-      _.each(this.props.model.rows, (row, index) => {
-        let partialSection = _.find(this.props.model.partialScoring.sections, {
-          catId: row.id
-        });
-        if (!partialSection) {
-          partialSection = {
-            catId: row.id,
-            label: `Row ${index + 1}`,
-            partialScoring: []
-          };
-          this.props.model.partialScoring.sections.push(partialSection);
-        }
-        let correctResponseForRow = _.find(this.props.model.correctResponse, { id: row.id });
-        let trueCount = _.reduce(correctResponseForRow.matchSet, (acc, m) => {
-          return acc + (m ? 1 : 0);
-        });
-        partialSection.numberOfCorrectResponses = Math.max(trueCount, 0);
-        partialSection.partialScoring = _.filter(partialSection.partialScoring, (ps) => {
-          return ps.numberOfCorrect < trueCount;
-        });
-      });
-      this.props.model.partialScoring.sections = _.filter(this.props.model.partialScoring.sections, (section) => {
-        return _.find(this.props.model.rows, {
-          id: section.catId
-        });
-      });
-    } else if (this.props.model.config.inputType === Main.InputTypes.Radio) {
-      this.props.model.partialScoring = this.props.model.partialScoring || [];
-      if (!_.isArray(this.props.model.partialScoring)) {
-        this.props.model.partialScoring = [];
-      }
-    }
+    this.props.onPartialScoringChanged(partialScoring);
   }
 
   _sumCorrectAnswers() {
@@ -170,7 +120,10 @@ class Main extends React.Component {
       row.matchSet[columnIndex] = value.selected;
     }
     this.props.onCorrectChanged(this.props.model.correctResponse);
-    this._updatePartialScoring();
+  }
+
+  onInputTypeChanged(event, value, three) {
+    this.props.onInputTypeChanged(event, value, three);
   }
 
   render() {
@@ -190,7 +143,7 @@ class Main extends React.Component {
                 <MenuItem value="four-columns" primaryText="4 Columns"/>
                 <MenuItem value="five-columns" primaryText="5 Columns"/>
               </SelectField>
-              <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged}>
+              <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.onInputTypeChanged.bind(this)}>
                 <MenuItem value={Main.InputTypes.Radio} primaryText="Radio - One Answer"/>
                 <MenuItem value={Main.InputTypes.Checkbox} primaryText="Checkbox - Multiple Answers"/>
               </SelectField>
