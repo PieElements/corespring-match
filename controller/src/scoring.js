@@ -1,3 +1,7 @@
+import _ from 'lodash';
+
+export const maxScore = 1;
+
 function countWhenTrue(acc, bool) {
   return acc + (bool ? 1 : 0);
 }
@@ -31,7 +35,6 @@ export function buildCorrectnessMatrix(question, answer) {
       let correctMatch = zippedMatches[0];
       let answeredMatch = zippedMatches[1];
       let correctness = "";
-
       if (answeredMatch) {
         correctness = correctMatch ? "correct" : "incorrect";
       } else {
@@ -62,16 +65,43 @@ export function buildCorrectnessMatrix(question, answer) {
   return matrix;
 }
 
+function getNumCorrect(question, session) {
+  let matrix = buildCorrectnessMatrix(question, session.answers);
+  return matrix.reduce((acc, { matchSet }) => {
+    let correct = matchSet.find(({ correctness }) => correctness === 'correct') !== undefined;
+    return acc + (correct ? 1 : 0);
+  }, 0);
+}
 
 function radioPartialScore(question, session) {
   if (question.partialScoring) {
-    let correctness = buildCorrectnessMatrix(question, session.answer);
-    console.log('correctness', correctness);
+    let numCorrect = getNumCorrect(question, session);
+    if (numCorrect === question.rows.length) {
+      return maxScore;
+    }
+    let scoring = question.partialScoring.find(({ correctCount }) => correctCount === numCorrect);
+    return scoring ? (scoring.weight * maxScore) : 0;
   }
   return 0;
 }
 
 function checkboxPartialScore(question, session) {
+  let { answers } = session;
+  if (question.partialScoring) {
+    return question.correctResponse.map(({ id, matchSet }) => {
+      let answer = answers.find((answer) => answer.id === id);
+      if (answer) {
+        let correctAnswerCount = answer.matchSet.map((value, index) => [value, matchSet[index]]).reduce((acc, [answerValue, correctValue]) =>
+          acc + ((answerValue === true && correctValue === true) ? 1 : 0), 0)
+        let row = question.partialScoring.find((scoring) => scoring.id === id);
+        if (row) {
+          let scenario = row.scoring.find(({ correctCount }) => correctCount === correctAnswerCount);
+          return scenario ? scenario.weight * maxScore : 0;
+        }
+      }
+      return 0;
+    }).reduce((a, b) => a + b, 0);
+  }
   return 0;
 }
 

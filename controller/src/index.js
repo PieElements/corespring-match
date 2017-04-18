@@ -5,6 +5,10 @@ function countWhenTrue(acc, bool) {
   return acc + (bool ? 1 : 0);
 }
 
+function countTrueValues(arr) {
+  return _.reduce(arr, countWhenTrue, 0);
+}
+
 const colorMap = {
   black_on_rose: 'black-on-rose',
   white_on_black: 'white-on-black',
@@ -23,7 +27,6 @@ const Feedback = {
 
 function getFeedback(question, answer, settings, numAnswered, numAnsweredCorrectly, totalCorrectAnswers) {
   function getCorrectness() {
-    console.log('numAnswered', numAnswered);
     return (numAnswered === 0) ? 'warning' : (numAnsweredCorrectly === totalCorrectAnswers) ? 'correct' : (
       (numAnsweredCorrectly > 0) ? 'partial' : 'incorrect'
     );
@@ -95,13 +98,6 @@ export function outcome(question, session) {
 
 export function model(question, session, env) {
 
-  if (env.mode === 'evaluate') {
-    console.log('score!', score(question, session));
-  }
-
-  function countTrueValues(arr) {
-    return _.reduce(arr, countWhenTrue, 0);
-  }
 
   function numberOfAnswers(answer) {
     if (!answer) {
@@ -120,6 +116,10 @@ export function model(question, session, env) {
     response.columns = question.columns;
     response.rows = question.rows || [];
     response.config = question.config;
+
+    if (env.mode === 'evaluate') {
+      //console.log('score!', score(question, session));
+    }
 
     if (env.mode === 'evaluate') {
       let numAnswered = numberOfAnswers(session.answers);

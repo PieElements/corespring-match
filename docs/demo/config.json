@@ -62,7 +62,7 @@
       ],
       "config": {
         "layout": "four-columns",
-        "inputType": "checkbox"
+        "inputType": "radio"
       }
     }
   ]
