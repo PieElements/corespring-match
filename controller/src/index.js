@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { score, buildCorrectnessMatrix } from './scoring';
 
 function countWhenTrue(acc, bool) {
   return acc + (bool ? 1 : 0);
@@ -94,6 +95,10 @@ export function outcome(question, session) {
 
 export function model(question, session, env) {
 
+  if (env.mode === 'evaluate') {
+    console.log('score!', score(question, session));
+  }
+
   function countTrueValues(arr) {
     return _.reduce(arr, countWhenTrue, 0);
   }
@@ -107,62 +112,6 @@ export function model(question, session, env) {
     }, 0);
 
     return sum;
-  }
-
-  function whereIdIsEqual(id) {
-    return function(match) {
-      return match.id === id;
-    };
-  }
-
-  function makeEmptyAnswerRow(correctRow) {
-    var answerRow = _.cloneDeep(correctRow);
-    answerRow.matchSet = _.map(answerRow.matchSet, function() {
-      return false;
-    });
-    return answerRow;
-  }
-
-  function buildCorrectnessMatrix(question, answer) {
-    function validateRow(correctRow) {
-      let answerRow = _.find(answer, whereIdIsEqual(correctRow.id));
-      if (!answerRow) {
-        answerRow = makeEmptyAnswerRow(correctRow);
-      }
-      let zippedMatchSet = _.zip(correctRow.matchSet, answerRow.matchSet);
-      let matchSet = zippedMatchSet.map(function(zippedMatches) {
-        let correctMatch = zippedMatches[0];
-        let answeredMatch = zippedMatches[1];
-        let correctness = "";
-
-        if (answeredMatch) {
-          correctness = correctMatch ? "correct" : "incorrect";
-        } else {
-          correctness = "unknown";
-        }
-        return {
-          correctness: correctness,
-          value: answeredMatch
-        };
-      });
-
-      let returnValue = {
-        id: correctRow.id,
-        matchSet: matchSet
-      };
-
-      let numberOfExpectedAnswers = countTrueValues(correctRow.matchSet);
-      let numberOfActualAnswers = countTrueValues(answerRow.matchSet);
-      let answerExpected = numberOfExpectedAnswers > 0 && numberOfActualAnswers === 0;
-      if (answerExpected) {
-        returnValue.answerExpected = true;
-      }
-
-      return returnValue;
-    }
-
-    let matrix = question.correctResponse.map(validateRow);
-    return matrix;
   }
 
   return new Promise((resolve) => {

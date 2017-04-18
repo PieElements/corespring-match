@@ -11,7 +11,6 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
 
   onInputTypeChanged(event, key, value) {
     if (value !== this._model.config.inputType) {
-      console.log('update!');
       this.onModelUpdate('config.inputType')(event, key, value);
       this._model.partialScoring = this.getDefaultScoring();
     }
@@ -53,6 +52,11 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
     return partialScoring;
   }
 
+  onPartialScoringChanged(partialScoring) {
+    this._model.partialScoring = partialScoring;
+    this.modelDidUpdate();
+  }
+
   _rerender() {
     let element = React.createElement(Main, {
       model: this._model,
@@ -63,7 +67,7 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
       onRowsChanged: this.onModelUpdate('rows').bind(this),
       onColumnsChanged: this.onModelUpdate('columns').bind(this),
       onCorrectChanged: this.onModelUpdate('correctResponse').bind(this),
-      onPartialScoringChanged: this.onModelUpdate('partialScoring').bind(this)
+      onPartialScoringChanged: this.onPartialScoringChanged.bind(this)
     });
     ReactDOM.render(element, this);
   }

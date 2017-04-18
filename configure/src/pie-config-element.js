@@ -18,14 +18,12 @@ export default class PieConfigElement extends HTMLElement {
     let detail = {
       update: this._model
     };
-    console.log('modelDidUpdate', this._model);
     this.dispatchEvent(new CustomEvent('model.updated', { bubbles: true, detail }));
   }
 
   onModelUpdate(path, rerender) {
     let self = this;
     rerender = (rerender === undefined ? true : rerender);
-
     function update(obj, is, value) {
       if (typeof is === 'string') {
         return update(obj, is.split('.'), value);
