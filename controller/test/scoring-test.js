@@ -7,12 +7,53 @@ import { score, maxScore } from '../src/scoring';
 describe('score', () => {
 
   let baseQuestion = {
+    correctResponse: [
+      { id: "row-1", matchSet: [ true, false, false ] }, 
+      { id: "row-2", matchSet: [ false, true, false ]}, 
+      { id: "row-3", matchSet: [ true, false, false ]}
+    ],
     rows: [
       { id: 'row-1', labelHtml: 'Row 1' },
       { id: 'row-2', labelHtml: 'Row 2' },
       { id: 'row-3', labelHtml: 'Row 3' }
     ]
   };
+
+  let sessionForCorrectCount = (question, num) => {
+    let rv = question.correctResponse.slice(0);
+    return {
+      answers: rv.slice(0, num)
+    };
+  };
+
+  describe('default scoring', () => {
+    let question = cloneDeep(baseQuestion);
+
+    describe('when no responses are correct', () => {
+      let session = sessionForCorrectCount(question, 0);
+
+      it('returns 0', () => {
+        expect(score(question, session)).to.equal(0);
+      });
+    });
+
+    describe('when some responses are correct', () => {
+      let session = sessionForCorrectCount(question, 2);
+
+      it('returns 0', () => {
+        expect(score(question, session)).to.equal(0);
+      });
+    });
+
+    describe('when all responses are correct', () => {
+      let session = sessionForCorrectCount(question, question.correctResponse.length);
+
+      it('returns maxScore', () => {
+        expect(score(question, session)).to.equal(maxScore);
+      });
+    });
+
+  });
 
   describe('partial scoring', () => {
 
@@ -23,27 +64,15 @@ describe('score', () => {
       ];
 
       let question = merge(cloneDeep(baseQuestion), {
-        correctResponse: [
-          { id: "row-1", matchSet: [ true, false, false ] }, 
-          { id: "row-2", matchSet: [ false, true, false ]}, 
-          { id: "row-3", matchSet: [ true, false, false ]}
-        ],
         config: {
           inputType: 'radio'
         },
         partialScoring: partialScoring
       });
 
-      let sessionForCorrectCount = (num) => {
-        let rv = question.correctResponse.slice(0);
-        return {
-          answers: rv.slice(0, num)
-        };
-      };
-
       describe('no answers are correct', () => {
         it('returns 0', () => {
-          let session = sessionForCorrectCount(0);
+          let session = sessionForCorrectCount(question, 0);
           expect(score(question, session)).to.equal(0);
         });
       });
@@ -51,7 +80,7 @@ describe('score', () => {
       [1, 2].forEach((n) => {
         describe(`${n} < total correct are correct`, () => {
           it('returns partialScoring weight * maxScore', () => {
-            let session = sessionForCorrectCount(n);
+            let session = sessionForCorrectCount(question, n);
             expect(score(question, session)).to.equal(
               maxScore * partialScoring.find(({ correctCount }) => correctCount === n).weight);
           });
@@ -60,7 +89,7 @@ describe('score', () => {
 
       describe('all answers are correct', () => {
         it('returns maxScore', () => {
-          let session = sessionForCorrectCount(question.correctResponse.length);
+          let session = sessionForCorrectCount(question, question.correctResponse.length);
           expect(score(question, session)).to.equal(maxScore);
         });
       });

@@ -85,14 +85,20 @@ function radioPartialScore(question, session) {
   return 0;
 }
 
+function getCorrectCount(answerRow, correctResponseRow) {
+  return answerRow.matchSet.map((value, index) => [value, correctResponseRow.matchSet[index]]).reduce((acc, [answerValue, correctValue]) =>
+    acc + ((answerValue === true && correctValue === true) ? 1 : 0), 0);
+}
+
+
 function checkboxPartialScore(question, session) {
   let { answers } = session;
   if (question.partialScoring) {
-    return question.correctResponse.map(({ id, matchSet }) => {
+    return question.correctResponse.map((correctResponseRow) => {
+      let { id, matchSet } = correctResponseRow;
       let answer = answers.find((answer) => answer.id === id);
       if (answer) {
-        let correctAnswerCount = answer.matchSet.map((value, index) => [value, matchSet[index]]).reduce((acc, [answerValue, correctValue]) =>
-          acc + ((answerValue === true && correctValue === true) ? 1 : 0), 0)
+        let correctAnswerCount = getCorrectCount(answer, correctResponseRow);
         let row = question.partialScoring.find((scoring) => scoring.id === id);
         if (row) {
           let scenario = row.scoring.find(({ correctCount }) => correctCount === correctAnswerCount);
@@ -105,6 +111,16 @@ function checkboxPartialScore(question, session) {
   return 0;
 }
 
+function defaultScoring(question, session) {
+  let [totalCorrect, responseCorrect] = question.correctResponse.reduce(([totalCorrect, responseCorrect], correctResponseRow) => {
+    let { id, matchSet } = correctResponseRow;
+    let answerRow = session.answers.find(({ id }) => id === correctResponseRow.id);
+    let correctForRow = matchSet.filter(v => v === true).length;
+    return [totalCorrect + correctForRow, responseCorrect + (answerRow ? getCorrectCount(answerRow, correctResponseRow) : 0)];
+  }, [0, 0]);
+  return (totalCorrect === responseCorrect) ? maxScore : 0;
+}
+
 function partialScore(question, session) {
   if (question.config.inputType === 'checkbox') {
     return checkboxPartialScore(question, session);
@@ -113,5 +129,8 @@ function partialScore(question, session) {
 }
 
 export function score(question, session) {
-  return partialScore(question, session);
+  if (question.partialScoring) {
+    return partialScore(question, session);
+  }
+  return defaultScoring(question, session);
 }
