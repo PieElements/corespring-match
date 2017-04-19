@@ -109,6 +109,14 @@ class Main extends React.Component {
     return total;
   }
 
+  _sumCorrectRowAnswers() {
+    return this.props.model.correctResponse.reduce((acc, row) => {
+      let obj = {};
+      obj[row.id] = row.matchSet.reduce((acc, v) => acc + (v === true ? 1 : 0), 0)
+      return Object.assign(acc, obj);
+    }, {});
+  }
+
   setCorrect(rowId, columnIndex, value) {
     let row = _.find(this.props.model.correctResponse, (row) => {
       return row.id === rowId;
@@ -209,7 +217,8 @@ class Main extends React.Component {
                     onPartialScoringChange={this.onPartialScoringChange.bind(this)} />
                 ) : (this.props.model.config.inputType === Main.InputTypes.Checkbox) ? (
                   <MultiPartialScoringConfig
-                    headerText="If there is more than one correct answer per row, you may allow partial credit based on the number of correct answers submitted per row. This is optional."
+                    numberOfCorrectRowResponses={this._sumCorrectRowAnswers()}
+                    partialScoring={this.props.model.partialScoring}
                     onPartialScoringChange={this.onPartialScoringChange.bind(this)}
                   />
                 ) : 
