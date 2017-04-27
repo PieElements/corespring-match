@@ -16,9 +16,9 @@ import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 
 import ChoiceInput from 'choice-input';
 import EditableHTML from 'corespring-editable-html';
-import FeedbackConfig from 'corespring-feedback-config/src/index.jsx';
-import PartialScoringConfig from 'corespring-scoring-config/src/index.jsx';
-import MultiPartialScoringConfig from './multi-partial-scoring-config';
+import FeedbackConfig from 'corespring-feedback-config/src/index';
+import PartialScoringConfig from 'corespring-scoring-config/src/index';
+import MultiPartialScoringConfig from 'corespring-scoring-config/src/multi-partial-scoring-config';
 
 require('./index.less');
 
@@ -135,6 +135,7 @@ class Main extends React.Component {
   }
 
   render() {
+    console.log('this.props.partialScoring', this.props.partialScoring);
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
       <div className="corespring-match-config-root">
@@ -217,7 +218,8 @@ class Main extends React.Component {
                     onPartialScoringChange={this.onPartialScoringChange.bind(this)} />
                 ) : (this.props.model.config.inputType === Main.InputTypes.Checkbox) ? (
                   <MultiPartialScoringConfig
-                    numberOfCorrectRowResponses={this._sumCorrectRowAnswers()}
+                    rows={this.props.model.rows}
+                    correctResponse={this.props.model.correctResponse}
                     partialScoring={this.props.model.partialScoring}
                     onPartialScoringChange={this.onPartialScoringChange.bind(this)}
                   />

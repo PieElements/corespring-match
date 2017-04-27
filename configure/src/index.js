@@ -18,43 +18,13 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
 
   getDefaultScoring() {
     let partialScoring = undefined;
-    if (this._model.config.scoringType === 'checkbox') {
-      partialScoring = this.props.model.partialScoring || {
-        sections: []
-      };
-      this._model.rows.forEach((row, index) => {
-        let partialSection = _.find(this._model.partialScoring.sections, {
-          catId: row.id
-        });
-        if (!partialSection) {
-          partialSection = {
-            catId: row.id,
-            label: `Row ${index + 1}`,
-            partialScoring: []
-          };
-          partialScoring.sections.push(partialSection);
-        }
-        let correctResponseForRow = _.find(this._model.correctResponse, { id: row.id });
-        let trueCount = _.reduce(correctResponseForRow.matchSet, (acc, m) => {
-          return acc + (m ? 1 : 0);
-        });
-        partialSection.numberOfCorrectResponses = Math.max(trueCount, 0);
-        partialSection.partialScoring = _.filter(partialSection.partialScoring, (ps) => {
-          return ps.numberOfCorrect < trueCount;
-        });
-      });
-      partialScoring.sections = _.filter(this.props.model.partialScoring.sections, (section) => {
-        return _.find(this.props.model.rows, {
-          id: section.catId
-        });
-      });
-    }
     return partialScoring;
   }
 
   onPartialScoringChanged(partialScoring) {
     this._model.partialScoring = partialScoring;
-    this.modelDidUpdate();
+    console.log('this._model.partialScoring', this._model.partialScoring);
+    this.modelDidUpdate(true);
   }
 
   _rerender() {
