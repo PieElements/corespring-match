@@ -192,9 +192,7 @@ describe('CorespringMatch', () => {
       let callback;
 
       beforeEach(() => {
-        callback = function(session) {
-          sessionFromCallback = session;
-        };
+        callback = sinon.spy();
         config.onChange = callback;
         config.session = session;
         wrapper = mkWrapper(config);
@@ -205,8 +203,8 @@ describe('CorespringMatch', () => {
           let row = wrapper.find('.question-row').forEach((row, index) => {
             row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
             row.find(ChoiceInput).at(1).prop('onChange')({selected: true});
-            let session = sessionFromCallback;
             let rowId = (/row-(.*)/.exec(row.node.props.className)[1]);
+            let session = callback.lastCall.args[0];
             let matchSet = session.find(({id}) => id === rowId).matchSet;
             expect(matchSet[0]).to.eql(false);
             expect(matchSet[1]).to.eql(true);
@@ -233,8 +231,9 @@ describe('CorespringMatch', () => {
           let row = wrapper.find('.question-row').forEach((row, index) => {
             row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
             row.find(ChoiceInput).at(1).prop('onChange')({selected: true});
+            let rowId = (/row-(.*)/.exec(row.node.props.className)[1]);
             let session = callback.lastCall.args[0];
-            let matchSet = session.answers[index].matchSet;
+            let matchSet = session.find(({id}) => id === rowId).matchSet;
             expect(matchSet[0]).to.eql(true);
             expect(matchSet[1]).to.eql(true);
           });
