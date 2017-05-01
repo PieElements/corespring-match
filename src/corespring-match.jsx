@@ -161,8 +161,6 @@ export default class CorespringMatch extends React.Component {
     let disabled = this.props.mode !== 'gather';
     let showCorrect = (this.props.mode === 'evaluate' && this.state.showCorrect);
 
-    console.log('this.props.session', this.props.session);
-
     let correctness = (rowIndex, columnIndex) => {
       if (showCorrect && this.props.model.correctResponse) {
         return this.props.model.correctResponse[rowIndex].matchSet[columnIndex] ? 'correct' : undefined;
@@ -218,7 +216,7 @@ export default class CorespringMatch extends React.Component {
         <tbody>
           { 
             rows.map((row, rowIndex) => {
-              return <tr className="question-row" key={rowIndex}>
+              return <tr className={`question-row row-${row.id}`} key={rowIndex}>
                 <td className="question-cell match-td-padded" dangerouslySetInnerHTML={{__html: row.labelHtml}}></td>
                 <td className="answer-expected-warning match-td-padded">
                 {

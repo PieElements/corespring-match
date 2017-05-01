@@ -11,7 +11,7 @@
             "id" : "row-1",
             "matchSet" : [ 
                 true, 
-                false, 
+                true, 
                 false
             ]
         }, 
@@ -62,7 +62,7 @@
       ],
       "config": {
         "layout": "four-columns",
-        "inputType": "radio"
+        "inputType": "checkbox"
       }
     }
   ]

@@ -5,13 +5,12 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import _ from 'lodash';
-import ChoiceInput from '../src/choice-input';
 import Checkbox from 'material-ui/Checkbox';
 import RadioButton from 'material-ui/RadioButton';
 
 describe('CorespringMatch', () => {
 
-  let wrapper, toggle, icon, CorespringMatch;
+  let wrapper, toggle, icon, CorespringMatch, ChoiceInput, feedbackPanel;
 
   beforeEach(() => {
     toggle = () => {
@@ -22,17 +21,29 @@ describe('CorespringMatch', () => {
       return <div class="nothing-submitted-icon"/>;
     };
 
+    ChoiceInput = () => {
+      return <div></div>;
+    }
+
+    feedbackPanel = () => {
+      return <div></div>;
+    }
+
     icon['@noCallThru'] = true;
     toggle['@noCallThru'] = true;
+    ChoiceInput['@noCallThru'] = true;
+    feedbackPanel['@noCallThru'] = true;
 
     CorespringMatch = proxyquire('../src/corespring-match', {
+      'choice-input': ChoiceInput,
+      'corespring-feedback-panel': feedbackPanel,
       'corespring-correct-answer-toggle': toggle,
       'corespring-icon/nothing-submitted-icon': icon
     }).default;
   })
 
   let mkWrapper = (opts, clone = true) => {
-    opts = clone ? opts = _.merge({
+    opts = clone ? _.merge({
       model: {},
       mode: 'gather'
     }, opts) : opts;
@@ -177,21 +188,26 @@ describe('CorespringMatch', () => {
     describe('with radio input', () => {
       let config = buildConfig('radio');
       let session = {};
+      let sessionFromCallback;
+      let callback;
 
       beforeEach(() => {
+        callback = function(session) {
+          sessionFromCallback = session;
+        };
+        config.onChange = callback;
         config.session = session;
         wrapper = mkWrapper(config);
       });
 
       describe('when two choices in a row are clicked', () => {
-        var callback = sinon.spy();
-        config.onChange = callback;
         it('only the most recent choice is selected', () => {
           let row = wrapper.find('.question-row').forEach((row, index) => {
             row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
             row.find(ChoiceInput).at(1).prop('onChange')({selected: true});
-            let session = callback.lastCall.args[0];
-            let matchSet = session.answers[index].matchSet;
+            let session = sessionFromCallback;
+            let rowId = (/row-(.*)/.exec(row.node.props.className)[1]);
+            let matchSet = session.find(({id}) => id === rowId).matchSet;
             expect(matchSet[0]).to.eql(false);
             expect(matchSet[1]).to.eql(true);
           });
