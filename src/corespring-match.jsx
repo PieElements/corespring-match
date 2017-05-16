@@ -172,7 +172,6 @@ export default class CorespringMatch extends React.Component {
 
     let choiceCellClass = (rowIndex, columnIndex) => {
       return _.without([
-        'answer-cell',
         'match-td-padded',
         correctness(rowIndex, columnIndex)
       ], undefined).join(' ');
