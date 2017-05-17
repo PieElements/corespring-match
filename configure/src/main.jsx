@@ -93,8 +93,6 @@ class Main extends React.Component {
   }
 
   onHeaderChange(index, html) {
-    console.log('index', index);
-    console.log('html', html);
     this.props.model.columns[index].labelHtml = html;
     this.props.onColumnsChanged(event, this.props.model.columns);
   }
@@ -181,7 +179,6 @@ class Main extends React.Component {
   }
 
   render() {
-    console.log('this.props.model', this.props.model);
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
       <div className="corespring-match-config-root">
