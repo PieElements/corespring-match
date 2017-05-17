@@ -20,6 +20,8 @@ import FeedbackConfig from 'corespring-feedback-config/src/index';
 import PartialScoringConfig from 'corespring-scoring-config/src/index';
 import MultiPartialScoringConfig from 'corespring-scoring-config/src/multi-partial-scoring-config';
 
+import zip from 'lodash/zip';
+
 require('./index.less');
 
 injectTapEventPlugin();
@@ -28,6 +30,12 @@ class Main extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      stash: {
+        columns: [],
+        correctness: []
+      }
+    };
   }
 
   _getNumberOfColumnsForLayout(layout) {
@@ -79,16 +87,14 @@ class Main extends React.Component {
     this.props.onRowsChanged(event, this.props.model.rows);
   }
 
-  edit(index) {
-    console.log(`edit ${index}`);
-  }
-
   onQuestionChange(index, html) {
     this.props.model.rows[index].labelHtml = html;
     this.props.onRowsChanged(event, this.props.model.rows);
   }
 
   onHeaderChange(index, html) {
+    console.log('index', index);
+    console.log('html', html);
     this.props.model.columns[index].labelHtml = html;
     this.props.onColumnsChanged(event, this.props.model.columns);
   }
@@ -98,8 +104,52 @@ class Main extends React.Component {
     this.props.onFeedbackChanged(this.props.model.feedback);
   }
 
+  onLayoutChanged(event, key, value) {
+    const splitIndex = key + 3;
+    const { columns, rows, correctResponse } = this.props.model;
+    this._stashColumns();
+    
+    if (splitIndex <= columns.length) {
+      let keep = columns.slice(0, splitIndex);
+      this.props.model.columns = keep;
+    } else {
+      for (let i = columns.length; i < splitIndex; i++) {
+        this.fillColumn(i);
+      }
+    }
+
+    this.props.model.config.layout = value;
+    this.props.onColumnsChanged(this.props.model);
+  }
+
   onPartialScoringChange(partialScoring) {
     this.props.onPartialScoringChanged(partialScoring);
+  }
+
+  fillColumn(index) {
+    const { columns, correctness } = this.state.stash;
+    const { correctResponse, rows } = this.props.model;
+    let column = columns[index] !== undefined ? columns[index] : {labelHtml: ''};
+    this.props.model.columns[index] = column;
+    correctResponse.forEach(({ matchSet }, rowIndex) => {
+      if (index >= matchSet.length) {
+        matchSet.push(...Array(index - matchSet.length).fill(false));
+      }
+      if (correctness[index] && correctness[index][rowIndex]) {
+        matchSet[index] = correctness[index][rowIndex];
+      }
+    });
+  }
+
+  _stashColumns() {
+    const { columns, rows, correctResponse } = this.props.model;
+    const stashColumns = columns;
+    this.setState({
+      stash: {
+        columns: stashColumns,
+        correctness: zip.apply(_, correctResponse.map(({ matchSet }) => matchSet))
+      }
+    });
   }
 
   _sumCorrectAnswers() {
@@ -130,12 +180,8 @@ class Main extends React.Component {
     this.props.onCorrectChanged(this.props.model.correctResponse);
   }
 
-  onInputTypeChanged(event, value, three) {
-    this.props.onInputTypeChanged(event, value, three);
-  }
-
   render() {
-    console.log('this.props.partialScoring', this.props.partialScoring);
+    console.log('this.props.model', this.props.model);
     let theme = getMuiTheme({});
     return <MuiThemeProvider muiTheme={theme}>
       <div className="corespring-match-config-root">
@@ -147,12 +193,12 @@ class Main extends React.Component {
                 rows. This interaction allows for either one or more correct answers. Setting more than one 
                 answer as correct allows for partial credit (see the Scoring tab).
               </p>
-              <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.props.onLayoutChanged}>
+              <SelectField floatingLabelText="Layout" value={this.props.model.config.layout} onChange={this.onLayoutChanged.bind(this)}>
                 <MenuItem value="three-columns" primaryText="3 Columns"/>
                 <MenuItem value="four-columns" primaryText="4 Columns"/>
                 <MenuItem value="five-columns" primaryText="5 Columns"/>
               </SelectField>
-              <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.onInputTypeChanged.bind(this)}>
+              <SelectField floatingLabelText="Response Type" value={this.props.model.config.inputType} onChange={this.props.onInputTypeChanged.bind(this)}>
                 <MenuItem value={Main.InputTypes.Radio} primaryText="Radio - One Answer"/>
                 <MenuItem value={Main.InputTypes.Checkbox} primaryText="Checkbox - Multiple Answers"/>
               </SelectField>

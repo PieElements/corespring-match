@@ -24,7 +24,7 @@ export default class CorespringMatch extends React.Component {
 
   componentWillReceiveProps(props) {
     this.setState({
-      model: this._prepareModel() 
+      model: this._prepareModel(props) 
     });
   }
 
@@ -32,7 +32,7 @@ export default class CorespringMatch extends React.Component {
     return 'corespring-match-table';
   }
 
-  _prepareModel() {
+  _prepareModel(props) {
     const $log = console;
     const YES_LABEL = 'Yes';
     const YES_NO = 'YES_NO';
@@ -41,10 +41,11 @@ export default class CorespringMatch extends React.Component {
     const FALSE_LABEL = 'False';
 
     let self = this;
+    props = props !== undefined ? props : this.props;
 
     let prepareColumns = () => {
-      let columns = _.cloneDeep(self.props.model.columns);
-      let answerType = self.props.model.answerType;
+      let columns = _.cloneDeep(props.model.columns);
+      let answerType = props.model.answerType;
       if (answerType === YES_NO || answerType === TRUE_FALSE) {
         if (columns.length !== 3) {
           $log.warn('Match interaction with boolean answer type should have 2 columns, found ' + columns.length);
@@ -93,7 +94,7 @@ export default class CorespringMatch extends React.Component {
 
     let prepareRows = () => {
       let createMatchSetFromSession = (id) => {
-        return _.find(self.props.session.answers, whereIdIsEqual(id))
+        return _.find(props.session.answers, whereIdIsEqual(id))
           .matchSet.map((match) => {
             return {
               value: match
@@ -109,10 +110,10 @@ export default class CorespringMatch extends React.Component {
         });
       };
 
-      let answersExist = (self.props.session && self.props.session.answers);
-      let rows = self.props.model.rows.map((row) => {
+      let answersExist = (props.session && props.session.answers);
+      let rows = props.model.rows.map((row) => {
         let cloneRow = _.cloneDeep(row);
-        cloneRow.matchSet = answersExist === true ? createMatchSetFromSession(row.id) : createEmptyMatchSet(self.props.model.columns.length - 1);
+        cloneRow.matchSet = answersExist === true ? createMatchSetFromSession(row.id) : createEmptyMatchSet(props.model.columns.length - 1);
         return cloneRow;
       });
       return rows;

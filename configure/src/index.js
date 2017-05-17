@@ -39,6 +39,11 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
     this.modelDidUpdate(true);
   }
 
+  onModelChanged(model) {
+    this._model = model;
+    this.modelDidUpdate(true);
+  }
+
   onCorrectChanged(correctResponse) {
     let correctAnswersForRow = (rowId) => {
       let correctResponseRow = correctResponse.find(({ id }) => id === rowId);
@@ -63,6 +68,7 @@ export default class CorespringMatchConfigReactElement extends PieConfigElement 
       onShuffleChanged: this.onModelUpdate('config.shuffle').bind(this),
       onFeedbackChanged: this.onModelUpdate('feedback').bind(this),
       onRowsChanged: this.onModelUpdate('rows').bind(this),
+      onModelChanged: this.onModelChanged.bind(this),
       onColumnsChanged: this.onModelUpdate('columns').bind(this),
       onCorrectChanged: this.onCorrectChanged.bind(this),
       onPartialScoringChanged: this.onPartialScoringChanged.bind(this)
