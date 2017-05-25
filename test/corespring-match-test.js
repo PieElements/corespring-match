@@ -1,16 +1,17 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import { stub, assert } from 'sinon';
-import { expect } from 'chai';
-import sinon from 'sinon';
-import proxyquire from 'proxyquire';
-import _ from 'lodash';
+import { assert, stub } from 'sinon';
+
 import Checkbox from 'material-ui/Checkbox';
 import RadioButton from 'material-ui/RadioButton';
+import React from 'react';
+import _ from 'lodash';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import { shallow } from 'enzyme';
+import sinon from 'sinon';
 
 describe('CorespringMatch', () => {
 
-  let wrapper, toggle, icon, CorespringMatch, ChoiceInput, feedbackPanel;
+  let wrapper, toggle, icon, mod, CorespringMatch, ChoiceInput, feedbackPanel;
 
   beforeEach(() => {
     toggle = () => {
@@ -18,7 +19,7 @@ describe('CorespringMatch', () => {
     };
 
     icon = () => {
-      return <div class="nothing-submitted-icon"/>;
+      return <div class="nothing-submitted-icon" />;
     };
 
     ChoiceInput = () => {
@@ -34,12 +35,13 @@ describe('CorespringMatch', () => {
     ChoiceInput['@noCallThru'] = true;
     feedbackPanel['@noCallThru'] = true;
 
-    CorespringMatch = proxyquire('../src/corespring-match', {
+    mod = proxyquire('../src/corespring-match', {
       'choice-input': ChoiceInput,
       'corespring-feedback-panel': feedbackPanel,
       'corespring-correct-answer-toggle': toggle,
       'corespring-icon/nothing-submitted-icon': icon
-    }).default;
+    });
+    CorespringMatch = mod.default;
   })
 
   let mkWrapper = (opts, clone = true) => {
@@ -60,19 +62,19 @@ describe('CorespringMatch', () => {
 
     let rows = [
       {
-        "id" : "row-1",
+        "id": "row-1",
         "labelHtml": "Question text 1"
       },
       {
-        "id" : "row-2",
+        "id": "row-2",
         "labelHtml": "Question text 2"
       },
       {
-        "id" : "row-3",
+        "id": "row-3",
         "labelHtml": "Question text 3"
       },
       {
-        "id" : "row-4",
+        "id": "row-4",
         "labelHtml": "Question text 4"
       }
     ];
@@ -94,24 +96,24 @@ describe('CorespringMatch', () => {
         "model": {
           "correctResponse": [
             {
-              "id" : "row-1",
-              "matchSet" : [true,false]
+              "id": "row-1",
+              "matchSet": [true, false]
             },
             {
-              "id" : "row-2",
-              "matchSet" : [true,false]
+              "id": "row-2",
+              "matchSet": [true, false]
             },
             {
-              "id" : "row-3",
-              "matchSet" : [true,false]
+              "id": "row-3",
+              "matchSet": [true, false]
             },
             {
-              "id" : "row-4",
-              "matchSet" : [true,false]
+              "id": "row-4",
+              "matchSet": [true, false]
             }
           ],
           "columns": columns,
-          "rows" : rows,
+          "rows": rows,
           "config": {
             "inputType": input
           }
@@ -170,7 +172,7 @@ describe('CorespringMatch', () => {
           let rows = wrapper.find('.question-row');
           rows.forEach((row, index) => {
             expect(row.find('.question-cell').html().includes(config.model.rows[index].labelHtml))
-                .to.eql(true);
+              .to.eql(true);
           });
         });
 
@@ -201,11 +203,11 @@ describe('CorespringMatch', () => {
       describe('when two choices in a row are clicked', () => {
         it('only the most recent choice is selected', () => {
           let row = wrapper.find('.question-row').forEach((row, index) => {
-            row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
-            row.find(ChoiceInput).at(1).prop('onChange')({selected: true});
+            row.find(ChoiceInput).at(0).prop('onChange')({ selected: true });
+            row.find(ChoiceInput).at(1).prop('onChange')({ selected: true });
             let rowId = (/row-(.*)/.exec(row.node.props.className)[1]);
             let session = callback.lastCall.args[0];
-            let matchSet = session.find(({id}) => id === rowId).matchSet;
+            let matchSet = session.find(({ id }) => id === rowId).matchSet;
             expect(matchSet[0]).to.eql(false);
             expect(matchSet[1]).to.eql(true);
           });
@@ -229,11 +231,11 @@ describe('CorespringMatch', () => {
         config.onChange = callback;
         it('both choices are selected', () => {
           let row = wrapper.find('.question-row').forEach((row, index) => {
-            row.find(ChoiceInput).at(0).prop('onChange')({selected: true});
-            row.find(ChoiceInput).at(1).prop('onChange')({selected: true});
+            row.find(ChoiceInput).at(0).prop('onChange')({ selected: true });
+            row.find(ChoiceInput).at(1).prop('onChange')({ selected: true });
             let rowId = (/row-(.*)/.exec(row.node.props.className)[1]);
             let session = callback.lastCall.args[0];
-            let matchSet = session.find(({id}) => id === rowId).matchSet;
+            let matchSet = session.find(({ id }) => id === rowId).matchSet;
             expect(matchSet[0]).to.eql(true);
             expect(matchSet[1]).to.eql(true);
           });
@@ -294,13 +296,13 @@ describe('CorespringMatch', () => {
           matchSet: [correctResponse(), unknownResponse()]
         }, {
           id: 'row-2',
-          matchSet: [correctResponse(), unknownResponse()]          
+          matchSet: [correctResponse(), unknownResponse()]
         }, {
           id: 'row-3',
-          matchSet: [correctResponse(), unknownResponse()]          
+          matchSet: [correctResponse(), unknownResponse()]
         }, {
           id: 'row-4',
-          matchSet: [correctResponse(), unknownResponse()]          
+          matchSet: [correctResponse(), unknownResponse()]
         }
       ];
 
@@ -337,13 +339,13 @@ describe('CorespringMatch', () => {
           matchSet: [unknownResponse(), incorrectResponse()]
         }, {
           id: 'row-2',
-          matchSet: [unknownResponse(), incorrectResponse()]          
+          matchSet: [unknownResponse(), incorrectResponse()]
         }, {
           id: 'row-3',
-          matchSet: [unknownResponse(), incorrectResponse()]          
+          matchSet: [unknownResponse(), incorrectResponse()]
         }, {
           id: 'row-4',
-          matchSet: [unknownResponse(), incorrectResponse()]          
+          matchSet: [unknownResponse(), incorrectResponse()]
         }
       ];
 
@@ -371,9 +373,9 @@ describe('CorespringMatch', () => {
 
       describe('showCorrect is toggled', () => {
         beforeEach(() => {
-          wrapper.setState({showCorrect: true});          
+          wrapper.setState({ showCorrect: true });
         });
-        
+
         it('does not display .incorrect', () => {
           expect(wrapper.find('.incorrect').length).to.eql(0);
         });
@@ -384,7 +386,7 @@ describe('CorespringMatch', () => {
       });
 
     });
-    
+
   });
 
 });
