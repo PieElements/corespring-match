@@ -1,6 +1,19 @@
 import Main from './main.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import reduce from 'lodash/reduce';
+
+/**
+ * Is complete if 1 option in the entire match has been selected. 
+ * @param {*} answers 
+ */
+export const isComplete = (answers) => {
+  const numberOfAnswers = 0;
+  const reduceMatchSet = (acc, m) => acc + (m ? 1 : 0);
+  const reduceRow = (acc, row) => acc + reduce(row.matchSet, reduceMatchSet, 0);
+  const noOfSelected = reduce(answers, reduceRow, 0);
+  return noOfSelected > 0;
+}
 
 export default class CorespringMatchReactElement extends HTMLElement {
 
@@ -13,28 +26,27 @@ export default class CorespringMatchReactElement extends HTMLElement {
   set model(s) {
     this._model = s;
     this._rerender();
+    this.dispatch('model-set');
   }
 
   get session() {
     return this._session;
   }
 
+  dispatch(name) {
+    const complete = isComplete(this._session ? (this._session.answers || []) : []);
+    const event = new CustomEvent(name, { bubbles: true, detail: { complete } });
+    this.dispatchEvent(event);
+  }
+
   set session(s) {
     this._session = s;
     this._rerender();
+    this.dispatch('session-changed');
   }
 
   _onChange(data) {
-    console.log(data);
-    var event = new CustomEvent('pie', {
-      bubbles: true,
-      detail: {
-        type: 'sessionChanged',
-        component: this.tagName.toLowerCase()
-      }
-    });
-
-    this.dispatchEvent(event);
+    this.dispatch('session-changed');
   };
 
   _rerender() {
@@ -44,16 +56,11 @@ export default class CorespringMatchReactElement extends HTMLElement {
         session: this._session,
         onChange: this._onChange.bind(this)
       });
-      ReactDOM.render(element, this, () => {
-        console.log('rendered');
-      });
-    } else {
-      console.log('skip');
+      ReactDOM.render(element, this)
     }
   }
 
   connectedCallback() {
-    this.dispatchEvent(new CustomEvent('pie.register', { bubbles: true }));
     this._rerender();
   }
 
