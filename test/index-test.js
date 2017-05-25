@@ -27,7 +27,7 @@ describe('index', () => {
 
   describe('isComplete', () => {
 
-    it('returns false if one is selected', () => {
+    it('returns true if one is selected', () => {
       const isComplete = mod.isComplete([
         { matchSet: [false, false, false] },
         { matchSet: [false, true, false] },
